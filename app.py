@@ -303,6 +303,55 @@ st.markdown("""
         border: 1px solid rgba(56,189,248,0.3);
         margin-bottom: 10px;
     }
+    /* Texto general */
+p, span, label, div {
+    color: #e2e8f0 !important;
+}
+
+/* Texto de selectbox */
+.stSelectbox label {
+    color: #f8fafc !important;
+}
+
+/* Texto dentro de inputs */
+input, textarea {
+    color: #ffffff !important;
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab"] {
+    color: #cbd5e1 !important;
+}
+
+/* Tab activa */
+.stTabs [aria-selected="true"] {
+    color: white !important;
+}
+
+/* Dataframes */
+[data-testid="stDataFrame"] {
+    color: white !important;
+}
+
+/* Texto de métricas */
+[data-testid="metric-container"] * {
+    color: #f8fafc !important;
+}
+
+/* Expander */
+.streamlit-expanderHeader {
+    color: #f8fafc !important;
+}
+
+/* Sidebar texto */
+section[data-testid="stSidebar"] * {
+    color: #e2e8f0 !important;
+}
+
+/* Texto pequeño */
+small {
+    color: #cbd5e1 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
