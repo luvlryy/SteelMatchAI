@@ -39,7 +39,7 @@ from statsmodels.formula.api import ols
 # CONFIGURACIÓN GENERAL
 # ==========================================================
 
-DEFAULT_DATA_FILE = "data/steel_carbon_data.xlsx"
+DEFAULT_DATA_FILE = "Data/steel_carbon_data.xlsx"
 
 PROPIEDADES_MECANICAS = [
     "UTS (MPa)",
