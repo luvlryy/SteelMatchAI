@@ -95,7 +95,10 @@ st.markdown("""
 
     /* ── Fondo general ── */
     .stApp {
-        background: linear-gradient(135deg, #0f172a 0%, #0c1a2e 50%, #0f172a 100%);
+        background:
+        radial-gradient(circle at top left, rgba(56,189,248,0.15), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(99,102,241,0.12), transparent 30%),
+        #020617;
         background-attachment: fixed;
     }
 
