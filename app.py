@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 Proyecto Integrador Materiales — SteelMatch AI
-Versión Completa — Totalmente Interactiva, Traducida y Didáctica
+Versión Completa y Didáctica — Gamificada, Interactiva y Guiada
 """
 
 import re
 import io
+import random
 import warnings
 import numpy as np
 import pandas as pd
@@ -229,6 +230,15 @@ st.markdown("""
         color: #cbd5e1 !important;
     }
 
+    /* ── CUADROS DE LEYENDA TÉCNICA EXPLICADA ── */
+    .leyenda-grafica {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px dashed rgba(56, 189, 248, 0.4);
+        padding: 18px;
+        border-radius: 10px;
+        margin-top: 15px;
+    }
+
     p, span, label, div { color: #e2e8f0 !important; }
     .stSelectbox label { color: #f8fafc !important; }
     input, textarea { color: #ffffff !important; }
@@ -327,7 +337,7 @@ def cargar_y_preprocesar_datos(nombre_archivo, archivo_bytes=None):
 
 
 # ==========================================================
-# MENÚ LATERAL: LOGICA BLINDADA DE CONTROLES
+# MENÚ LATERAL: LOGICA DE INTENSIDADES Y ADVERTENCIAS
 # ==========================================================
 
 st.sidebar.subheader("📁 Almacén de Datos")
@@ -341,29 +351,36 @@ else:
 st.sidebar.markdown("---")
 st.sidebar.header("⚙️ Filtros del Recomendador")
 
-opcion_uso = st.sidebar.selectbox(
-    "💡 ¿Cuál es tu objetivo de diseño?",
+perfil_material = st.sidebar.selectbox(
+    "🎯 Elige la intensidad de tu propiedad clave:",
     options=[
-        "Personalizado (Ingresar valores manualmente)",
-        "Doblar, moldear o soldar piezas fácilmente (Alta Ductilidad)",
-        "Construcción general o soporte de estructuras (Equilibrado)",
-        "Fabricar herramientas o piezas de alta resistencia (Alta Dureza)"
+        "Personalizado (Control total manual)",
+        "Quiero que soporte mucho peso sin romperse (Alta Resistencia)",
+        "Quiero que sea muy difícil de rayar o desgastar (Alta Dureza)",
+        "Quiero poder doblarlo y darle forma fácilmente (Alta Flexibilidad)"
     ]
 )
 
-# BLINDAJE CONTRA NAMEERROR: Declaración explícita de variables en cada rama del flujo condicional
-if "Alta Ductilidad" in opcion_uso:
-    val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.15, 415, 230, 115, 33
+# REESTRUCTURACIÓN: Mensajes de advertencia metalúrgica ("Pero...") en tiempo real
+if "Alta Resistencia" in perfil_material:
+    val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.55, 750, 450, 220, 16
     deshabilitar_controles = True
-elif "Equilibrado" in opcion_uso or "Construcción" in opcion_uso:
-    val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.40, 620, 340, 180, 21
+    st.sidebar.info("⚡ **Efecto Secundario:** El sistema buscará aceros con más carbono para maximizar la carga. **Pero ten en cuenta** que el material se volverá rígido, perdiendo casi toda su capacidad de doblado sin agrietarse.")
+
+elif "Alta Dureza" in perfil_material:
+    val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.85, 950, 580, 300, 10
     deshabilitar_controles = True
-elif "Alta Dureza" in opcion_uso:
-    val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.85, 930, 580, 290, 11
+    st.sidebar.warning("⚠️ **Efecto Secundario:** Obtendrás una superficie ideal para herramientas de corte. **Pero ten en cuenta** que el acero ganará fragilidad molecular; un impacto seco fuerte podría romperlo fácilmente.")
+
+elif "Alta Flexibilidad" in perfil_material:
+    val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.12, 380, 210, 105, 35
     deshabilitar_controles = True
+    st.sidebar.success("✅ **Efecto Secundario:** El material será sumamente noble para moldear, cortar y soldar. **Pero ten en cuenta** que cederá ante fuerzas muy bajas y no es apto para sostener cargas estructurales.")
+
 else:
     val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.45, 600, 400, 180, 20
     deshabilitar_controles = False
+    st.sidebar.caption("Mueve los deslizadores libremente para diseñar una aleación teórica a tu medida.")
 
 carbono = st.sidebar.slider("% de Carbono deseado", 0.0, 1.5, float(val_c), 0.01, disabled=deshabilitar_controles)
 uts = st.sidebar.slider("Resistencia UTS (MPa)", 200, 1500, int(val_uts), disabled=deshabilitar_controles)
@@ -377,6 +394,18 @@ lista_espanol = ["Todos"] + sorted([TRADUCCIONES_TRATAMIENTOS.get(t, t) for t in
 tratamiento_elegido_espanol = st.sidebar.selectbox("Tratamiento térmico preferido", lista_espanol)
 
 buscar = st.sidebar.button("🚀 Buscar material óptimo")
+
+
+# ==========================================================
+# BANCO DE DATOS CURIOSOS ALEATORIOS
+# ==========================================================
+
+DATOS_CURIOSOS = [
+    "💡 **Dato curioso:** ¡El acero no es un metal puro, es una mezcla de Hierro y Carbono! El carbono actúa como una cuña microscópica que traba los átomos de hierro para que no se deslicen libremente.",
+    "💡 **Dato curioso:** El acero de los remaches del Titanic contenía altas impurezas de azufre. Con el agua congelada del Atlántico, el metal se volvió frágil como el vidrio en lugar de doblarse ante el impacto.",
+    "💡 **Dato curioso:** Las legendarias katanas samurái combinaban dos tipos de acero: uno muy duro en el exterior para mantener el filo afilado, y uno blando en el núcleo para absorber los golpes sin romperse.",
+    "💡 **Dato curioso:** En la Torre Eiffel, el hierro pudelado utilizado se comporta de forma similar al acero estructural moderno de bajo carbono, lo que le permite balancearse frente al viento sin fracturas."
+]
 
 
 # ==========================================================
@@ -401,6 +430,9 @@ with tab_inicio:
         cambiará drásticamente sus estadísticas de 'Ataque' (Resistencia) o 'Defensa' (Dureza). Aquí analizaremos matemáticamente esas combinaciones.</p>
     </div>
     """, unsafe_allow_html=True)
+    
+    # Renderizado dinámico del dato curioso
+    st.info(random.choice(DATOS_CURIOSOS))
     
     col1, col2, col3 = st.columns(3)
     col1.metric("Registros analizados en total", len(aceros))
@@ -444,8 +476,16 @@ with tab_exploracion:
     df_carb["Tratamiento"] = df_carb["Condition_simple"].map(TRADUCCIONES_TRATAMIENTOS)
     
     fig_c = px.scatter(df_carb, x="%C", y=prop_c, color="Tratamiento", hover_data=["SAE Grade"], trendline="ols")
-    st.caption("🎨 **Tip de lectura:** Si la línea de tendencia sube, la propiedad aumenta con el Carbono; si baja, significa que el Carbono desgasta o reduce esa propiedad.")
     st.plotly_chart(aplicar_layout_plotly(fig_c), use_container_width=True)
+
+    # LEYENDA INTUITIVA DE PUNTOS Y LÍNEAS
+    st.markdown(f"""
+    <div class="leyenda-grafica">
+        📌 <strong>Guía rápida para interpretar este mapa visual:</strong><br>
+        • 🔵 <strong>Cada Punto en el espacio:</strong> Representa una muestra real de acero probada en laboratorio. Su altura te indica el nivel de <strong>{prop_c}</strong> que alcanzó. Si pasas tu cursor sobre cualquiera, verás su etiqueta SAE comercial.<br>
+        • 📈 <strong>La Línea Recta (Tendencia):</strong> Si la línea va <strong>hacia arriba</strong>, el Carbono es amigo de la propiedad y la potencia. Si va <strong>hacia abajo</strong>, significa que el Carbono desgasta o castiga esa característica a medida que añades más al horno.
+    </div>
+    """, unsafe_allow_html=True)
 
 
 # ── TAB 3 — TEMPERATURA ──
@@ -480,6 +520,14 @@ with tab_temp:
         st.plotly_chart(aplicar_layout_plotly(fig_n), use_container_width=True)
     else:
         st.warning("No hay suficientes registros con temperatura explícita para la muestra de Normalizado.")
+
+    st.markdown(f"""
+    <div class="leyenda-grafica">
+        📌 <strong>¿Cómo se leen estos gráficos de calor?</strong><br>
+        • El eje horizontal (X) muestra qué tan caliente estuvo el horno. El eje vertical (Y) muestra el impacto en <strong>{prop_t}</strong>.<br>
+        • 🎨 El color de los puntos muestra el porcentaje de carbono: los puntos oscuros tienen muy poco carbono, mientras que los brillantes están cargados de carbono.
+    </div>
+    """, unsafe_allow_html=True)
 
 
 # ── TAB 4 — ANOVA ──
