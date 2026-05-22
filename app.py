@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Proyecto Integrador Materiales — SteelMatch AI
-Versión unificada y blindada contra NameError con traducción completa
+Versión unificada, corregida de NameError y con traducción completa de la interfaz.
 """
 
 import re
@@ -221,7 +221,6 @@ st.markdown("""
         color: white !important;
     }
 
-    /* ── CAJA DE CONCLUSIÓN LEGIBLE Y VISUAL (MEJORADA) ── */
     .conclusion-enriquecida {
         background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
         border: 2px solid #38bdf8;
@@ -284,7 +283,7 @@ st.markdown("""
 
 
 # ==========================================================
-# FUNCIONES DE PROCESAMIENTO MÉTALURGICO
+# FUNCIONES DE PROCESAMIENTO METALÚRGICO
 # ==========================================================
 
 def agrupar_tratamiento(texto):
@@ -371,10 +370,9 @@ def cargar_y_preprocesar_datos(nombre_archivo, archivo_bytes=None):
 
 
 # ==========================================================
-# MENÚ LATERAL: LOGICA INICIAL DE CONTROLADORES CONTRA ERR
+# MENÚ LATERAL: LOGICA INICIAL DE CONTROLADORES
 # ==========================================================
 
-# Definición previa global de la barra lateral para evitar desajustes de NameError en renderizado
 st.sidebar.subheader("📁 Archivo de datos")
 archivo_subido = st.sidebar.file_uploader("Cargar hoja de aceros (.csv, .xlsx)", type=["csv", "xlsx", "xls"])
 
@@ -383,7 +381,6 @@ if archivo_subido is not None:
 else:
     aceros = cargar_y_preprocesar_datos(DEFAULT_DATA_FILE)
 
-# Inicializar parámetros por defecto para sliders en la barra lateral
 st.sidebar.markdown("---")
 st.sidebar.header("⚙️ Configuración del Recomendador")
 
@@ -397,12 +394,13 @@ opcion_uso = st.sidebar.selectbox(
     ]
 )
 
-# Control de lógica de presets
+# CORRECCIÓN: Garantizar que deshabilitar_controles se defina en todas las opciones
 if "Alta Ductilidad" in opcion_uso:
     val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.15, 415, 230, 115, 33
     deshabilitar_controles = True
-elif "Equilibrado" in opcion_uso:
+elif "Equilibrado" in opcion_uso or "Construcción" in opcion_uso:
     val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.40, 620, 340, 180, 21
+    deshabilitar_controles = True
 elif "Alta Dureza" in opcion_uso:
     val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.85, 930, 580, 290, 11
     deshabilitar_controles = True
@@ -410,14 +408,12 @@ else:
     val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.45, 600, 400, 180, 20
     deshabilitar_controles = False
 
-# Renderizado seguro de componentes numéricos
 carbono = st.sidebar.slider("% de Carbono requerido", 0.0, 1.5, float(val_c), 0.01, disabled=deshabilitar_controles)
 uts = st.sidebar.slider("UTS requerido (MPa)", 200, 1500, int(val_uts), disabled=deshabilitar_controles)
 ys = st.sidebar.slider("YS requerido (MPa)", 100, 1300, int(val_ys), disabled=deshabilitar_controles)
 dureza = st.sidebar.slider("Dureza requerida (HB)", 50, 500, int(val_dureza), disabled=deshabilitar_controles)
 elongacion = st.sidebar.slider("Elongación requerida (%)", 1, 50, int(val_elongacion), disabled=deshabilitar_controles)
 
-# Tratamientos traducidos para visualización amigable
 datos_modelo_limpio = aceros.dropna(subset=COLUMNAS_MODELO + ["Condition_simple"])
 lista_originales = datos_modelo_limpio["Condition_simple"].dropna().unique().tolist()
 lista_espanol = ["Todos"] + sorted([TRADUCCIONES_TRATAMIENTOS.get(t, t) for t in lista_originales])
@@ -559,13 +555,13 @@ with tab_recomendador:
 
 
 # ==========================================================
-# CONCLUSIÓN GENERAL DINÁMICA Y DE ALTO CONTRASTE (CORREGIDA)
+# CONCLUSIÓN GENERAL DINÁMICA Y DE ALTO CONTRASTE
 # ==========================================================
 st.markdown("""
 <div class="conclusion-enriquecida">
     <h3>📢 Conclusión General del Comportamiento de los Aceros</h3>
     <p style="font-size: 15px !important; color: #cbd5e1 !important; line-height: 1.7 !important; margin: 0;">
-        El comportamiento mecánico de los aceros al carbono se rige bajo principios físicos de causa y efecto directos. Para entenderlo de forma sencilla, la relación se distribuye así:
+        El comportamiento mecánico de los aceros al carbono se rige bajo principios físicos de causa y efecto directos:
     </p>
     <div class="grid-conclusion">
         <div class="card-conclusion-item">
@@ -574,11 +570,11 @@ st.markdown("""
         </div>
         <div class="card-conclusion-item">
             <strong>🔵 Si se aplica un tratamiento de Recocido (Annealed):</strong>
-            <p>Se reduce el esfuerzo interno, disminuyendo la dureza y **aumentando la elongación (ductilidad)**. Esto permite doblar, moldear y soldar el acero con facilidad sin riesgo de fracturas.</p>
+            <p>Se reduce el esfuerzo interno, disminuyendo la dureza y <strong>aumentando la elongación (ductilidad)</strong>. Esto permite doblar, moldear y soldar el acero con facilidad sin riesgo de fracturas.</p>
         </div>
         <div class="card-conclusion-item">
             <strong>⚡ Si se aplica un tratamiento de Estirado en Frío (Cold Drawn):</strong>
-            <p>Se deforma el material mecánicamente a temperatura ambiente, lo que **eleva notablemente el límite elástico (YS)**. Esto permite que soporte fuerzas mayores en estructuras sin deformarse permanentemente.</p>
+            <p>Se deforma el material mecánicamente a temperatura ambiente, lo que <strong>eleva notablemente el límite elástico (YS)</strong>. Esto permite que soporte fuerzas mayores en estructuras sin deformarse permanentemente.</p>
         </div>
         <div class="card-conclusion-item">
             <strong>🌡️ Afectación por la Temperatura:</strong>
