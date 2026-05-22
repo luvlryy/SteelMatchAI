@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Proyecto Integrador Materiales — SteelMatch AI
-Versión Completa y Didáctica — Gamificada, Interactiva y Guiada
+Versión Definitiva — Modos de Selección (Bajo/Medio/Alto), Modo Profesional y Explicación Primero
 """
 
 import re
@@ -215,7 +215,7 @@ st.markdown("""
         color: #cbd5e1 !important;
     }
 
-    /* ── CUADROS DE GUÍA INTERACTIVA (HERO BLOCKS) ── */
+    /* ── CUADROS DE GUÍA INTERACTIVA ── */
     .guia-didactica {
         background: rgba(30, 41, 59, 0.5);
         border-left: 4px solid #6366f1;
@@ -237,6 +237,7 @@ st.markdown("""
         padding: 18px;
         border-radius: 10px;
         margin-top: 15px;
+        margin-bottom: 20px;
     }
 
     p, span, label, div { color: #e2e8f0 !important; }
@@ -337,7 +338,7 @@ def cargar_y_preprocesar_datos(nombre_archivo, archivo_bytes=None):
 
 
 # ==========================================================
-# MENÚ LATERAL: LOGICA DE INTENSIDADES Y ADVERTENCIAS
+# MENÚ LATERAL: MODOS DE SELECCIÓN Y ADVERTENCIAS FÍSICAS
 # ==========================================================
 
 st.sidebar.subheader("📁 Almacén de Datos")
@@ -349,44 +350,53 @@ else:
     aceros = cargar_y_preprocesar_datos(DEFAULT_DATA_FILE)
 
 st.sidebar.markdown("---")
-st.sidebar.header("⚙️ Filtros del Recomendador")
+st.sidebar.header("⚙️ Configuración del Acero")
 
-perfil_material = st.sidebar.selectbox(
-    "🎯 Elige la intensidad de tu propiedad clave:",
-    options=[
-        "Personalizado (Control total manual)",
-        "Quiero que soporte mucho peso sin romperse (Alta Resistencia)",
-        "Quiero que sea muy difícil de rayar o desgastar (Alta Dureza)",
-        "Quiero poder doblarlo y darle forma fácilmente (Alta Flexibilidad)"
-    ]
-)
+# Control de perfil del usuario para activar el Modo Avanzado o Guiado
+modo_usuario = st.sidebar.radio("👨‍💻 Elige tu perfil de uso:", ["Guiado (Por Niveles)", "Profesional (Control Manual)"])
 
-# REESTRUCTURACIÓN: Mensajes de advertencia metalúrgica ("Pero...") en tiempo real
-if "Alta Resistencia" in perfil_material:
-    val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.55, 750, 450, 220, 16
+if modo_usuario == "Guiado (Por Niveles)":
     deshabilitar_controles = True
-    st.sidebar.info("⚡ **Efecto Secundario:** El sistema buscará aceros con más carbono para maximizar la carga. **Pero ten en cuenta** que el material se volverá rígido, perdiendo casi toda su capacidad de doblado sin agrietarse.")
+    
+    nivel_resistencia = st.sidebar.select_slider("💪 Nivel de Fuerza / Resistencia (UTS):", options=["Bajo", "Medio", "Alto"], value="Medio")
+    nivel_dureza = st.sidebar.select_slider("💎 Nivel de Dureza Superficial (HB):", options=["Bajo", "Medio", "Alto"], value="Medio")
+    nivel_flexibilidad = st.sidebar.select_slider("🎗️ Nivel de Flexibilidad / Ductilidad (Elongación):", options=["Bajo", "Medio", "Alto"], value="Medio")
 
-elif "Alta Dureza" in perfil_material:
-    val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.85, 950, 580, 300, 10
-    deshabilitar_controles = True
-    st.sidebar.warning("⚠️ **Efecto Secundario:** Obtendrás una superficie ideal para herramientas de corte. **Pero ten en cuenta** que el acero ganará fragilidad molecular; un impacto seco fuerte podría romperlo fácilmente.")
+    # Mapeo de niveles lógicos a valores numéricos realistas
+    mapa_uts = {"Bajo": 380, "Medio": 600, "Alto": 950}
+    mapa_ys = {"Bajo": 210, "Medio": 380, "Alto": 580}
+    mapa_hb = {"Bajo": 105, "Medio": 180, "Alto": 300}
+    mapa_elo = {"Bajo": 11, "Medio": 21, "Alto": 35}
+    mapa_c = {"Bajo": 0.12, "Medio": 0.45, "Alto": 0.85}
 
-elif "Alta Flexibilidad" in perfil_material:
-    val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.12, 380, 210, 105, 35
-    deshabilitar_controles = True
-    st.sidebar.success("✅ **Efecto Secundario:** El material será sumamente noble para moldear, cortar y soldar. **Pero ten en cuenta** que cederá ante fuerzas muy bajas y no es apto para sostener cargas estructurales.")
+    uts_val = mapa_uts[nivel_resistencia]
+    ys_val = mapa_ys[nivel_resistencia]
+    dureza_val = mapa_hb[nivel_dureza]
+    elongacion_val = mapa_elo[nivel_flexibilidad]
+    
+    # El carbono se calcula promediando las intenciones del usuario
+    carbono_val = (mapa_c[nivel_resistencia] + mapa_c[nivel_dureza] + (1.0 - mapa_c[nivel_flexibilidad])) / 3
+    carbono_val = np.clip(carbono_val, 0.05, 1.2)
+
+    # REQUISITO: Alertas metalúrgicas en tiempo real "Pero..." de acuerdo a lo seleccionado
+    if nivel_resistencia == "Alto" or nivel_dureza == "Alto":
+        st.sidebar.warning("⚠️ **Efecto Secundario:** Al buscar alta resistencia o dureza, el sistema requerirá mucho Carbono. **Pero ten en cuenta** que el material perderá flexibilidad molecular; será quebradizo ante golpes secos.")
+    elif nivel_flexibilidad == "Alto":
+        st.sidebar.success("✅ **Efecto Secundario:** El acero será fantástico para cortarse, moldearse y soldarse. **Pero ten en cuenta** que cederá ante fuerzas bajas y se deformará muy rápido bajo peso.")
+    else:
+        st.sidebar.caption("Has configurado una aleación balanceada estándar.")
 
 else:
-    val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.45, 600, 400, 180, 20
+    # Modo Profesional: Barras libres
     deshabilitar_controles = False
-    st.sidebar.caption("Mueve los deslizadores libremente para diseñar una aleación teórica a tu medida.")
+    carbono_val, uts_val, ys_val, dureza_val, elongacion_val = 0.45, 600, 400, 180, 20
+    st.sidebar.info("🧠 **Modo Profesional Activado:** Tienes el control absoluto de los deslizadores de laboratorio. Modifica cada parámetro bajo tus propios criterios de ingeniería.")
 
-carbono = st.sidebar.slider("% de Carbono deseado", 0.0, 1.5, float(val_c), 0.01, disabled=deshabilitar_controles)
-uts = st.sidebar.slider("Resistencia UTS (MPa)", 200, 1500, int(val_uts), disabled=deshabilitar_controles)
-ys = st.sidebar.slider("Límite Elástico YS (MPa)", 100, 1300, int(val_ys), disabled=deshabilitar_controles)
-dureza = st.sidebar.slider("Dureza Superficial (HB)", 50, 500, int(val_dureza), disabled=deshabilitar_controles)
-elongacion = st.sidebar.slider("Elongación / Ductilidad (%)", 1, 50, int(val_elongacion), disabled=deshabilitar_controles)
+carbono = st.sidebar.slider("% de Carbono deseado", 0.0, 1.5, float(carbono_val), 0.01, disabled=deshabilitar_controles)
+uts = st.sidebar.slider("Resistencia UTS (MPa)", 200, 1500, int(uts_val), disabled=deshabilitar_controles)
+ys = st.sidebar.slider("Límite Elástico YS (MPa)", 100, 1300, int(ys_val), disabled=deshabilitar_controles)
+dureza = st.sidebar.slider("Dureza Superficial (HB)", 50, 500, int(dureza_val), disabled=deshabilitar_controles)
+elongacion = st.sidebar.slider("Elongación / Ductilidad (%)", 1, 50, int(elongacion_val), disabled=deshabilitar_controles)
 
 datos_modelo_limpio = aceros.dropna(subset=COLUMNAS_MODELO + ["Condition_simple"])
 lista_originales = datos_modelo_limpio["Condition_simple"].dropna().unique().tolist()
@@ -431,7 +441,6 @@ with tab_inicio:
     </div>
     """, unsafe_allow_html=True)
     
-    # Renderizado dinámico del dato curioso
     st.info(random.choice(DATOS_CURIOSOS))
     
     col1, col2, col3 = st.columns(3)
@@ -448,63 +457,78 @@ with tab_inicio:
 with tab_exploracion:
     st.header("📊 Exploración y Comportamiento General")
     
+    # REQUISITO: Explicación didáctica ANTES de las tablas y gráficos
     st.markdown("""
     <div class="guia-didactica">
-        <p>💡 <strong>¿Qué estás viendo?</strong> Aquí abajo puedes descubrir cuánta variedad de materiales tenemos y poner a prueba la regla de oro de la metalurgia: 
-        ¿Es verdad que a más Carbono el metal se vuelve más rígido pero menos flexible? ¡Elige una propiedad en el menú desplegable y compruébalo tú mismo!</p>
+        <p>💡 <strong>¿Qué estás viendo aquí?</strong> En esta sección ponemos a prueba la regla de oro de la metalurgia. 
+        Analizaremos visualmente cómo el cambio en la química del material impacta en su rendimiento físico. 
+        Usa el selector para ver cómo reaccionan las distintas propiedades mecánicas frente al Carbono.</p>
     </div>
     """, unsafe_allow_html=True)
-    
-    col_t1, col_t2 = st.columns(2)
-    with col_t1:
-        st.subheader("Distribución por Norma Comercial (SAE Grade)")
-        t_aceros = aceros["SAE Grade"].value_counts().reset_index()
-        t_aceros.columns = ["SAE Grade", "Cantidad"]
-        st.dataframe(t_aceros, use_container_width=True)
-        
-    with col_t2:
-        st.subheader("Procesos térmicos aplicados en la muestra")
-        t_trats = aceros["Condition_simple"].value_counts().reset_index()
-        t_trats.columns = ["Original", "Cantidad"]
-        t_trats["Tratamiento (Español)"] = t_trats["Original"].map(TRADUCCIONES_TRATAMIENTOS)
-        st.dataframe(t_trats[["Tratamiento (Español)", "Cantidad"]], use_container_width=True)
 
     st.subheader("📈 Gráfica Interactiva: Química vs Propiedades Mecánicas")
     prop_c = st.selectbox("Elige el eje vertical (Y) para cruzarlo con el % de Carbono", PROPIEDADES_MECANICAS)
     
     df_carb = aceros.dropna(subset=["%C", prop_c, "Condition_simple"]).copy()
+    df_carb["Tratamiento"] = df_carb["Condition_simple"].map(TRADUCCIONES_TRATAMIENTON = TRADUCCIONES_TRATAMIENTOS)
     df_carb["Tratamiento"] = df_carb["Condition_simple"].map(TRADUCCIONES_TRATAMIENTOS)
     
+    # EXPLICACIÓN INTUITIVA DE PUNTOS Y LÍNEAS ANTES DEL GRÁFICO
+    st.markdown(f"""
+    <div class="leyenda-grafica">
+        📌 <strong>Guía rápida para interpretar el siguiente mapa visual:</strong><br>
+        • 🔵 <strong>Cada Punto en el espacio:</strong> Representa una muestra real de acero probada en laboratorio. Su altura te indica el nivel de <strong>{prop_c}</strong> que alcanzó. Si pasas tu cursor sobre cualquiera, verás su etiqueta SAE comercial.<br>
+        • 📈 <strong>La Línea Recta (Tendencia):</strong> Si la línea va <strong>hacia arriba</strong>, el Carbono potencia la propiedad. Si va <strong>hacia abajo</strong>, significa que el Carbono reduce esa característica a medida que añades más cantidad.
+    </div>
+    """, unsafe_allow_html=True)
+
     fig_c = px.scatter(df_carb, x="%C", y=prop_c, color="Tratamiento", hover_data=["SAE Grade"], trendline="ols")
     st.plotly_chart(aplicar_layout_plotly(fig_c), use_container_width=True)
 
-    # LEYENDA INTUITIVA DE PUNTOS Y LÍNEAS
-    st.markdown(f"""
-    <div class="leyenda-grafica">
-        📌 <strong>Guía rápida para interpretar este mapa visual:</strong><br>
-        • 🔵 <strong>Cada Punto en el espacio:</strong> Representa una muestra real de acero probada en laboratorio. Su altura te indica el nivel de <strong>{prop_c}</strong> que alcanzó. Si pasas tu cursor sobre cualquiera, verás su etiqueta SAE comercial.<br>
-        • 📈 <strong>La Línea Recta (Tendencia):</strong> Si la línea va <strong>hacia arriba</strong>, el Carbono es amigo de la propiedad y la potencia. Si va <strong>hacia abajo</strong>, significa que el Carbono desgasta o castiga esa característica a medida que añades más al horno.
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("---")
+    st.subheader("📋 Distribuciones de Muestras Registradas")
+    
+    col_t1, col_t2 = st.columns(2)
+    with col_t1:
+        st.caption("Cantidad de aceros disponibles agrupados por su Norma Comercial (SAE Grade).")
+        t_aceros = aceros["SAE Grade"].value_counts().reset_index()
+        t_aceros.columns = ["SAE Grade", "Cantidad"]
+        st.dataframe(t_aceros, use_container_width=True)
+        
+    with col_t2:
+        st.caption("Cantidad de aceros disponibles de acuerdo al Proceso Térmico que recibieron en fábrica.")
+        t_trats = aceros["Condition_simple"].value_counts().reset_index()
+        t_trats.columns = ["Original", "Cantidad"]
+        t_trats["Tratamiento (Español)"] = t_trats["Original"].map(TRADUCCIONES_TRATAMIENTOS)
+        st.dataframe(t_trats[["Tratamiento (Español)", "Cantidad"]], use_container_width=True)
 
 
 # ── TAB 3 — TEMPERATURA ──
 with tab_temp:
     st.header("🌡️ El Efecto del Horno (Influencia de la Temperatura)")
     
+    # REQUISITO: Explicación didáctica primero
     st.markdown("""
     <div class="guia-didactica">
-        <p>🔥 <strong>¿Qué pasa aquí adentro?</strong> Cuando metemos el acero al fuego, los átomos internos se reordenan. 
-        Subir la temperatura tiende a relajar las tensiones moleculares del metal (haciéndolo más suave o tenaz). 
-        Analicemos de manera separada los dos tratamientos térmicos más populares de la industria.</p>
+        <p>🔥 <strong>¿Qué pasa aquí adentro?</strong> Cuando metemos el acero al fuego, los átomos internos se relajan y se acomodan. 
+        Subir la temperatura tiende a eliminar el 'estrés' del metal (haciéndolo más flexible pero reduciendo un poco su rigidez extrema). 
+        A continuación, evaluaremos por separado los dos tratamientos en horno más comunes del sector industrial.</p>
     </div>
     """, unsafe_allow_html=True)
     
     prop_t = st.selectbox("Propiedad mecánica a evaluar frente a los cambios de temperatura", PROPIEDADES_MECANICAS, key="sb_p_t")
     df_temp = aceros.dropna(subset=["Temp_C", prop_t, "Condition_simple"])
     
+    st.markdown(f"""
+    <div class="leyenda-grafica">
+        📌 <strong>¿Cómo leer las gráficas térmicas de abajo?</strong><br>
+        • El eje horizontal (X) muestra los grados de calor del horno. El eje vertical (Y) muestra el impacto directo en <strong>{prop_t}</strong>.<br>
+        • 🎨 <strong>Código de color de los puntos:</strong> Los puntos oscuros tienen muy poco carbono (aceros dulces), mientras que los puntos brillantes están sumamente cargados de carbono.
+    </div>
+    """, unsafe_allow_html=True)
+
     st.subheader("🔵 Proceso de Recocido (Annealed)")
-    st.caption("El recocido consiste en calentar el metal y enfriarlo muy lentamente. Se usa para ablandar el material y poder mecanizarlo.")
+    st.caption("Consiste en calentar el metal y enfriarlo de forma extremadamente lenta dentro del propio horno. Se usa para ablandar el material.")
     df_ann = df_temp[df_temp["Condition_simple"] == "Annealed"]
     if not df_ann.empty:
         fig_a = px.scatter(df_ann, x="Temp_C", y=prop_t, color="%C", trendline="ols", color_continuous_scale="Blues")
@@ -513,7 +537,7 @@ with tab_temp:
         st.warning("No hay suficientes registros con temperatura explícita para la muestra de Recocido.")
 
     st.subheader("🟣 Proceso de Normalizado (Normalized)")
-    st.caption("El normalizado calienta el metal a altas temperaturas y se enfría al aire libre. Busca refinar el grano y darle una estructura uniforme y tenaz.")
+    st.caption("Calienta el metal a altas temperaturas y luego se extrae para enfriarse al aire libre. Busca un grano uniforme, balanceado y tenaz.")
     df_norm = df_temp[df_temp["Condition_simple"] == "Normalized"]
     if not df_norm.empty:
         fig_n = px.scatter(df_norm, x="Temp_C", y=prop_t, color="%C", trendline="ols", color_continuous_scale="Purples")
@@ -521,29 +545,25 @@ with tab_temp:
     else:
         st.warning("No hay suficientes registros con temperatura explícita para la muestra de Normalizado.")
 
-    st.markdown(f"""
-    <div class="leyenda-grafica">
-        📌 <strong>¿Cómo se leen estos gráficos de calor?</strong><br>
-        • El eje horizontal (X) muestra qué tan caliente estuvo el horno. El eje vertical (Y) muestra el impacto en <strong>{prop_t}</strong>.<br>
-        • 🎨 El color de los puntos muestra el porcentaje de carbono: los puntos oscuros tienen muy poco carbono, mientras que los brillantes están cargados de carbono.
-    </div>
-    """, unsafe_allow_html=True)
-
 
 # ── TAB 4 — ANOVA ──
 with tab_anova:
     st.header("🧪 El Detective Estadístico (Análisis ANOVA)")
     
+    # REQUISITO: Explicación didáctica primero
     st.markdown("""
     <div class="guia-didactica">
-        <p>🕵️‍♂️ <strong>¿Quién es el verdadero responsable?</strong> El análisis estadístico ANOVA actúa como un juez. 
-        Evalúa el comportamiento de los materiales y calcula con precisión matemática qué porcentaje de culpa tiene la química básica (% Carbono) 
-        y qué porcentaje es responsabilidad exclusiva del tipo de tratamiento térmico. ¡Busca la columna 'Influencia_%'!</p>
+        <p>🕵️‍♂️ <strong>¿Quién es el verdadero responsable del cambio?</strong> La palabra 'ANOVA' suena compleja, pero funciona como un detective matemático. 
+        Su trabajo es revisar las variaciones de las propiedades e indicar, mediante porcentajes, qué tanta culpa tiene la química básica (% Carbono) 
+        y qué tanta responsabilidad es del tratamiento en el horno. Mira la tabla final para conocer el veredicto científico.</p>
     </div>
     """, unsafe_allow_html=True)
     
     prop_anova = st.selectbox("Elige la propiedad criterio para ejecutar el juicio estadístico", PROPIEDADES_MECANICAS, key="sb_p_a")
     
+    st.subheader("📊 Tabla de Influencia Porcentual Matemático")
+    st.caption("Fíjate principalmente en la columna 'Influencia_%': el valor más alto dictamina quién domina el control de la propiedad.")
+
     df_anova = aceros.dropna(subset=["%C", "Condition_simple", prop_anova]).copy()
     if len(df_anova) > 10:
         df_anova = df_anova.rename(columns={"%C": "Carbono", prop_anova: "Propiedad", "Condition_simple": "Tratamiento"})
@@ -557,20 +577,21 @@ with tab_anova:
 with tab_recomendador:
     st.header("🔍 Recomendador de Materiales por Similitud Matemática")
     
+    # REQUISITO: Explicación didáctica primero
     st.markdown("""
     <div class="guia-didactica">
-        <p>🤖 <strong>¿Cómo funciona el buscador?</strong> Ajusta tus requisitos técnicos ideales utilizando el menú flotante de la izquierda. 
-        Al hacer clic en buscar, el algoritmo transformará tus deseos en un vector numérico y calculará de forma instantánea qué material real del almacén 
-        se parece más a lo que necesitas para tu proyecto mecánico.</p>
+        <p>🤖 <strong>¿Cómo funciona el buscador?</strong> Ajusta tus niveles preferidos (Baja, Mediana, Alta) en el panel izquierdo. 
+        Al presionar el botón de búsqueda, el recomendador comparará tus deseos numéricos contra la base de datos real del almacén utilizando distancias vectoriales, 
+        entregándote el acero comercial existente que mejor se adapta a tus requisitos.</p>
     </div>
     """, unsafe_allow_html=True)
 
     with st.expander("📚 Glosario rápido de términos (¿Qué significan estas variables?)"):
         st.markdown("""
-        * **UTS (Ultimate Tensile Strength):** ¿Cuánta fuerza de jalón aguanta el acero antes de partirse en dos pedazos?
-        * **YS (Yield Strength):** El límite elástico. Si lo estiras por debajo de este punto, el metal vuelve a su forma original como una liga. Si lo superas, quedará doblado para siempre.
-        * **Hardness (Dureza HB):** Resistencia de la superficie a ser rayada, penetrada o abollada por agentes externos.
-        * **Elongation (%):** Capacidad del material para estirarse sin romperse. Una alta elongación es ideal si requieres doblar o moldear el metal en frío.
+        * **UTS (Ultimate Tensile Strength):** ¿Cuánta fuerza de estiramiento resiste el acero antes de romperse por completo?
+        * **YS (Yield Strength):** Límite elástico. Hasta este punto puedes estirar el acero y regresará a su forma original como una liga. Si lo superas, se deforma permanentemente.
+        * **Hardness (Dureza HB):** Resistencia que tiene la cara del acero a ser rayada o abollada.
+        * **Elongation (%):** Capacidad del material para estirarse como chicle sin partirse. Ideal si necesitas doblarlo en frío.
         """)
 
     if not datos_modelo_limpio.empty:
@@ -596,18 +617,21 @@ with tab_recomendador:
                 pct_sim = 100 / (1 + dist[0][idx])
 
                 st.success("🎯 Búsqueda analítica completada con éxito")
+                
+                st.subheader("🏆 Material Comercial Recomendado")
                 c1, c2, c3 = st.columns(3)
                 with c1:
                     st.metric("Grado Comercial Encontrado", f"SAE {match_mat['SAE Grade']}")
                     st.metric("Tratamiento Sugerido", TRADUCCIONES_TRATAMIENTOS.get(match_mat['Condition_simple'], match_mat['Condition_simple']))
                 with c2:
-                    st.metric("Precisión / Compatibilidad", f"{pct_sim:.2f}%")
+                    st.metric("Compatibilidad del Match", f"{pct_sim:.2f}%")
                     st.metric("Porcentaje de Carbono Real", f"{match_mat['%C']:.3f} %")
                 with c3:
                     st.metric("Resistencia UTS Real", f"{match_mat['UTS (MPa)']} MPa")
                     st.metric("Dureza Brinell Real", f"{match_mat['Hardness (HB)']} HB")
 
-                st.subheader("📋 Ficha Técnica Oficial del Material Sugerido")
+                st.markdown("---")
+                st.subheader("📋 Ficha Técnica Oficial Completa")
                 st.dataframe(match_mat.to_frame(name="Especificación Técnica"), use_container_width=True)
 
 
