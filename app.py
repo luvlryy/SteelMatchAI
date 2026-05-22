@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Proyecto Integrador Materiales — SteelMatch AI
-Versión Definitiva — Modos de Selección (Bajo/Medio/Alto), Modo Profesional y Explicación Primero
+Versión Definitiva Corregida — Modos de Selección, Modo Profesional y Explicación Primero
 """
 
 import re
@@ -332,7 +332,7 @@ def cargar_y_preprocesar_datos(nombre_archivo, archivo_bytes=None):
     for col in PROPIEDADES_MECANICAS:
         aceros[col] = pd.to_numeric(aceros[col], errors="coerce")
 
-    aceros["Condition_simple"] = aceros["Conditions"].apply(agrupar_tratamiento)
+    aceros["Condition_simple"] = aceros["Conditions"].apply(agrupar_treatment)
     aceros["Temp_C"] = aceros["Conditions"].apply(extraer_temperatura)
     return aceros
 
@@ -352,7 +352,6 @@ else:
 st.sidebar.markdown("---")
 st.sidebar.header("⚙️ Configuración del Acero")
 
-# Control de perfil del usuario para activar el Modo Avanzado o Guiado
 modo_usuario = st.sidebar.radio("👨‍💻 Elige tu perfil de uso:", ["Guiado (Por Niveles)", "Profesional (Control Manual)"])
 
 if modo_usuario == "Guiado (Por Niveles)":
@@ -362,7 +361,6 @@ if modo_usuario == "Guiado (Por Niveles)":
     nivel_dureza = st.sidebar.select_slider("💎 Nivel de Dureza Superficial (HB):", options=["Bajo", "Medio", "Alto"], value="Medio")
     nivel_flexibilidad = st.sidebar.select_slider("🎗️ Nivel de Flexibilidad / Ductilidad (Elongación):", options=["Bajo", "Medio", "Alto"], value="Medio")
 
-    # Mapeo de niveles lógicos a valores numéricos realistas
     mapa_uts = {"Bajo": 380, "Medio": 600, "Alto": 950}
     mapa_ys = {"Bajo": 210, "Medio": 380, "Alto": 580}
     mapa_hb = {"Bajo": 105, "Medio": 180, "Alto": 300}
@@ -374,11 +372,9 @@ if modo_usuario == "Guiado (Por Niveles)":
     dureza_val = mapa_hb[nivel_dureza]
     elongacion_val = mapa_elo[nivel_flexibilidad]
     
-    # El carbono se calcula promediando las intenciones del usuario
     carbono_val = (mapa_c[nivel_resistencia] + mapa_c[nivel_dureza] + (1.0 - mapa_c[nivel_flexibilidad])) / 3
     carbono_val = np.clip(carbono_val, 0.05, 1.2)
 
-    # REQUISITO: Alertas metalúrgicas en tiempo real "Pero..." de acuerdo a lo seleccionado
     if nivel_resistencia == "Alto" or nivel_dureza == "Alto":
         st.sidebar.warning("⚠️ **Efecto Secundario:** Al buscar alta resistencia o dureza, el sistema requerirá mucho Carbono. **Pero ten en cuenta** que el material perderá flexibilidad molecular; será quebradizo ante golpes secos.")
     elif nivel_flexibilidad == "Alto":
@@ -387,7 +383,6 @@ if modo_usuario == "Guiado (Por Niveles)":
         st.sidebar.caption("Has configurado una aleación balanceada estándar.")
 
 else:
-    # Modo Profesional: Barras libres
     deshabilitar_controles = False
     carbono_val, uts_val, ys_val, dureza_val, elongacion_val = 0.45, 600, 400, 180, 20
     st.sidebar.info("🧠 **Modo Profesional Activado:** Tienes el control absoluto de los deslizadores de laboratorio. Modifica cada parámetro bajo tus propios criterios de ingeniería.")
@@ -457,7 +452,6 @@ with tab_inicio:
 with tab_exploracion:
     st.header("📊 Exploración y Comportamiento General")
     
-    # REQUISITO: Explicación didáctica ANTES de las tablas y gráficos
     st.markdown("""
     <div class="guia-didactica">
         <p>💡 <strong>¿Qué estás viendo aquí?</strong> En esta sección ponemos a prueba la regla de oro de la metalurgia. 
@@ -470,10 +464,8 @@ with tab_exploracion:
     prop_c = st.selectbox("Elige el eje vertical (Y) para cruzarlo con el % de Carbono", PROPIEDADES_MECANICAS)
     
     df_carb = aceros.dropna(subset=["%C", prop_c, "Condition_simple"]).copy()
-    df_carb["Tratamiento"] = df_carb["Condition_simple"].map(TRADUCCIONES_TRATAMIENTON = TRADUCCIONES_TRATAMIENTOS)
     df_carb["Tratamiento"] = df_carb["Condition_simple"].map(TRADUCCIONES_TRATAMIENTOS)
     
-    # EXPLICACIÓN INTUITIVA DE PUNTOS Y LÍNEAS ANTES DEL GRÁFICO
     st.markdown(f"""
     <div class="leyenda-grafica">
         📌 <strong>Guía rápida para interpretar el siguiente mapa visual:</strong><br>
@@ -507,7 +499,6 @@ with tab_exploracion:
 with tab_temp:
     st.header("🌡️ El Efecto del Horno (Influencia de la Temperatura)")
     
-    # REQUISITO: Explicación didáctica primero
     st.markdown("""
     <div class="guia-didactica">
         <p>🔥 <strong>¿Qué pasa aquí adentro?</strong> Cuando metemos el acero al fuego, los átomos internos se relajan y se acomodan. 
@@ -550,7 +541,6 @@ with tab_temp:
 with tab_anova:
     st.header("🧪 El Detective Estadístico (Análisis ANOVA)")
     
-    # REQUISITO: Explicación didáctica primero
     st.markdown("""
     <div class="guia-didactica">
         <p>🕵️‍♂️ <strong>¿Quién es el verdadero responsable del cambio?</strong> La palabra 'ANOVA' suena compleja, pero funciona como un detective matemático. 
@@ -577,7 +567,6 @@ with tab_anova:
 with tab_recomendador:
     st.header("🔍 Recomendador de Materiales por Similitud Matemática")
     
-    # REQUISITO: Explicación didáctica primero
     st.markdown("""
     <div class="guia-didactica">
         <p>🤖 <strong>¿Cómo funciona el buscador?</strong> Ajusta tus niveles preferidos (Baja, Mediana, Alta) en el panel izquierdo. 
@@ -605,7 +594,7 @@ with tab_recomendador:
                 df_res = df_res[df_res["Condition_simple"] == tag_or]
 
             if df_res.empty:
-                st.warning("No hay coincidencias para ese tratamiento térmico específico en el almacén actual.")
+                st.warning("No haycoincidencias para ese tratamiento térmico específico en el almacén actual.")
             else:
                 usr_in = np.array([[carbono, uts, ys, dureza, elongacion]])
                 usr_norm = scaler.transform(usr_in)
