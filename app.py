@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 Proyecto Integrador Materiales — SteelMatch AI
-Versión unificada, corregida de NameError y con traducción completa de la interfaz.
+Versión Completa — Totalmente Interactiva, Traducida y Didáctica
 """
 
 import re
 import io
+import warnings
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -17,6 +18,9 @@ from sklearn.metrics.pairwise import euclidean_distances
 
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
+
+# ── SILENCIAR ADVERTENCIAS MATEMÁTICAS EN LA INTERFAZ ──
+warnings.filterwarnings("ignore", category=UserWarning)
 
 
 # ==========================================================
@@ -167,60 +171,6 @@ st.markdown("""
         backdrop-filter: blur(8px);
     }
 
-    .hallazgo-card {
-        background: rgba(56,189,248,0.06);
-        border: 1px solid rgba(56,189,248,0.2);
-        border-radius: 16px;
-        padding: 20px 24px;
-        margin: 10px 0;
-    }
-
-    .badge-dominante {
-        display: inline-block;
-        background: linear-gradient(135deg, #0ea5e9, #6366f1);
-        color: white;
-        font-family: 'Syne', sans-serif;
-        font-weight: 700;
-        font-size: 14px;
-        padding: 6px 16px;
-        border-radius: 50px;
-    }
-
-    .badge-secundario {
-        display: inline-block;
-        background: rgba(100,116,139,0.3);
-        color: #94a3b8;
-        font-family: 'Syne', sans-serif;
-        font-weight: 600;
-        font-size: 13px;
-        padding: 5px 14px;
-        border-radius: 50px;
-    }
-
-    hr {
-        border: none;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, #38bdf8, transparent);
-        margin: 2rem 0;
-    }
-
-    .stTabs [data-baseweb="tab-list"] {
-        background: rgba(15,23,42,0.8);
-        border-radius: 12px;
-        padding: 4px;
-    }
-
-    .stTabs [data-baseweb="tab"] {
-        border-radius: 10px;
-        font-family: 'Syne', sans-serif;
-        font-weight: 600;
-    }
-
-    .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #0ea5e9, #6366f1) !important;
-        color: white !important;
-    }
-
     .conclusion-enriquecida {
         background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
         border: 2px solid #38bdf8;
@@ -229,6 +179,7 @@ st.markdown("""
         margin-top: 3rem;
         box-shadow: 0 10px 40px rgba(56, 189, 248, 0.15);
     }
+    
     .conclusion-enriquecida h3 {
         color: #38bdf8 !important;
         font-size: 24px !important;
@@ -236,22 +187,26 @@ st.markdown("""
         border-bottom: 1px solid rgba(56, 189, 248, 0.2);
         padding-bottom: 12px;
     }
+    
     .grid-conclusion {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 20px;
         margin-top: 20px;
     }
+    
     .card-conclusion-item {
         background: rgba(255, 255, 255, 0.03);
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 12px;
         padding: 20px;
     }
+    
     .card-conclusion-item strong {
         color: #38bdf8;
         font-size: 16px;
     }
+    
     .card-conclusion-item p {
         margin: 8px 0 0 0 !important;
         font-size: 14px !important;
@@ -259,16 +214,19 @@ st.markdown("""
         color: #cbd5e1 !important;
     }
 
-    .prop-badge {
-        display: inline-block;
-        background: rgba(56,189,248,0.15);
-        color: #38bdf8;
-        font-weight: 600;
-        font-size: 13px;
-        padding: 4px 14px;
-        border-radius: 8px;
-        border: 1px solid rgba(56,189,248,0.3);
-        margin-bottom: 10px;
+    /* ── CUADROS DE GUÍA INTERACTIVA (HERO BLOCKS) ── */
+    .guia-didactica {
+        background: rgba(30, 41, 59, 0.5);
+        border-left: 4px solid #6366f1;
+        padding: 15px 20px;
+        border-radius: 4px 12px 12px 4px;
+        margin-bottom: 20px;
+    }
+    
+    .guia-didactica p {
+        margin: 0 !important;
+        font-size: 14px !important;
+        color: #cbd5e1 !important;
     }
 
     p, span, label, div { color: #e2e8f0 !important; }
@@ -277,7 +235,6 @@ st.markdown("""
     .stTabs [data-baseweb="tab"] { color: #cbd5e1 !important; }
     .stTabs [aria-selected="true"] { color: white !important; }
     [data-testid="metric-container"] * { color: #f8fafc !important; }
-    .streamlit-expanderHeader { color: #f8fafc !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -370,11 +327,11 @@ def cargar_y_preprocesar_datos(nombre_archivo, archivo_bytes=None):
 
 
 # ==========================================================
-# MENÚ LATERAL: LOGICA INICIAL DE CONTROLADORES
+# MENÚ LATERAL: LOGICA BLINDADA DE CONTROLES
 # ==========================================================
 
-st.sidebar.subheader("📁 Archivo de datos")
-archivo_subido = st.sidebar.file_uploader("Cargar hoja de aceros (.csv, .xlsx)", type=["csv", "xlsx", "xls"])
+st.sidebar.subheader("📁 Almacén de Datos")
+archivo_subido = st.sidebar.file_uploader("Subir base de datos (.csv, .xlsx)", type=["csv", "xlsx", "xls"])
 
 if archivo_subido is not None:
     aceros = cargar_y_preprocesar_datos(archivo_subido.name, archivo_subido.getvalue())
@@ -382,19 +339,19 @@ else:
     aceros = cargar_y_preprocesar_datos(DEFAULT_DATA_FILE)
 
 st.sidebar.markdown("---")
-st.sidebar.header("⚙️ Configuración del Recomendador")
+st.sidebar.header("⚙️ Filtros del Recomendador")
 
 opcion_uso = st.sidebar.selectbox(
-    "💡 ¿Para qué vas a usar el acero?",
+    "💡 ¿Cuál es tu objetivo de diseño?",
     options=[
         "Personalizado (Ingresar valores manualmente)",
-        "Que se pueda doblar, moldear o soldar fácilmente (Alta Ductilidad)",
+        "Doblar, moldear o soldar piezas fácilmente (Alta Ductilidad)",
         "Construcción general o soporte de estructuras (Equilibrado)",
-        "Para herramientas, resortes o alta resistencia al desgaste (Alta Dureza)"
+        "Fabricar herramientas o piezas de alta resistencia (Alta Dureza)"
     ]
 )
 
-# CORRECCIÓN: Garantizar que deshabilitar_controles se defina en todas las opciones
+# BLINDAJE CONTRA NAMEERROR: Declaración explícita de variables en cada rama del flujo condicional
 if "Alta Ductilidad" in opcion_uso:
     val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.15, 415, 230, 115, 33
     deshabilitar_controles = True
@@ -408,23 +365,25 @@ else:
     val_c, val_uts, val_ys, val_dureza, val_elongacion = 0.45, 600, 400, 180, 20
     deshabilitar_controles = False
 
-carbono = st.sidebar.slider("% de Carbono requerido", 0.0, 1.5, float(val_c), 0.01, disabled=deshabilitar_controles)
-uts = st.sidebar.slider("UTS requerido (MPa)", 200, 1500, int(val_uts), disabled=deshabilitar_controles)
-ys = st.sidebar.slider("YS requerido (MPa)", 100, 1300, int(val_ys), disabled=deshabilitar_controles)
-dureza = st.sidebar.slider("Dureza requerida (HB)", 50, 500, int(val_dureza), disabled=deshabilitar_controles)
-elongacion = st.sidebar.slider("Elongación requerida (%)", 1, 50, int(val_elongacion), disabled=deshabilitar_controles)
+carbono = st.sidebar.slider("% de Carbono deseado", 0.0, 1.5, float(val_c), 0.01, disabled=deshabilitar_controles)
+uts = st.sidebar.slider("Resistencia UTS (MPa)", 200, 1500, int(val_uts), disabled=deshabilitar_controles)
+ys = st.sidebar.slider("Límite Elástico YS (MPa)", 100, 1300, int(val_ys), disabled=deshabilitar_controles)
+dureza = st.sidebar.slider("Dureza Superficial (HB)", 50, 500, int(val_dureza), disabled=deshabilitar_controles)
+elongacion = st.sidebar.slider("Elongación / Ductilidad (%)", 1, 50, int(val_elongacion), disabled=deshabilitar_controles)
 
 datos_modelo_limpio = aceros.dropna(subset=COLUMNAS_MODELO + ["Condition_simple"])
 lista_originales = datos_modelo_limpio["Condition_simple"].dropna().unique().tolist()
 lista_espanol = ["Todos"] + sorted([TRADUCCIONES_TRATAMIENTOS.get(t, t) for t in lista_originales])
 tratamiento_elegido_espanol = st.sidebar.selectbox("Tratamiento térmico preferido", lista_espanol)
 
-buscar = st.sidebar.button("Buscar material óptimo")
+buscar = st.sidebar.button("🚀 Buscar material óptimo")
 
 
 # ==========================================================
 # ESTRUCTURA DE PESTAÑAS (TABS VISTA PRINCIPAL)
 # ==========================================================
+
+st.title("SteelMatch AI")
 
 tab_inicio, tab_exploracion, tab_temp, tab_anova, tab_recomendador = st.tabs([
     "🏠 Inicio", "📊 Exploración", "🌡️ Temperatura", "🧪 ANOVA", "🔍 Recomendador"
@@ -433,74 +392,109 @@ tab_inicio, tab_exploracion, tab_temp, tab_anova, tab_recomendador = st.tabs([
 
 # ── TAB 1 — INICIO ──
 with tab_inicio:
-    st.header("Objetivo del proyecto")
-    st.write("Exploración sistemática y modelado matemático sobre la afectación física que inducen las aleaciones estables de Carbono en metales ferrosos.")
+    st.header("¡Bienvenido al Laboratorio de Simulación de Aceros!")
+    
+    st.markdown("""
+    <div class="guia-didactica">
+        <p>👋 <strong>¿De qué se trata este espacio?</strong> Imagina que el acero es como el personaje de un videojuego: 
+        dependiendo de los ingredientes químicos que le des (% de Carbono) y el tipo de entrenamiento que reciba en el horno (Tratamiento Térmico), 
+        cambiará drásticamente sus estadísticas de 'Ataque' (Resistencia) o 'Defensa' (Dureza). Aquí analizaremos matemáticamente esas combinaciones.</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
-    col1.metric("Registros cargados", len(aceros))
-    col2.metric("Tipos SAE distintos", aceros["SAE Grade"].nunique())
-    col3.metric("Tratamientos agrupados", aceros["Condition_simple"].nunique())
+    col1.metric("Registros analizados en total", len(aceros))
+    col2.metric("Grados SAE identificados", aceros["SAE Grade"].nunique())
+    col3.metric("Familias de tratamientos", aceros["Condition_simple"].nunique())
 
-    st.subheader("Muestra inicial de matriz limpia")
+    st.subheader("📋 Tu Matriz de Datos Limpia")
+    st.caption("Esta es la tabla base con la que el sistema trabaja internamente. Cada fila representa un acero probado en laboratorio.")
     st.dataframe(aceros.head(15), use_container_width=True)
 
 
 # ── TAB 2 — EXPLORACIÓN ──
 with tab_exploracion:
-    st.header("Exploración inicial de aceros y tratamientos")
+    st.header("📊 Exploración y Comportamiento General")
+    
+    st.markdown("""
+    <div class="guia-didactica">
+        <p>💡 <strong>¿Qué estás viendo?</strong> Aquí abajo puedes descubrir cuánta variedad de materiales tenemos y poner a prueba la regla de oro de la metalurgia: 
+        ¿Es verdad que a más Carbono el metal se vuelve más rígido pero menos flexible? ¡Elige una propiedad en el menú desplegable y compruébalo tú mismo!</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     col_t1, col_t2 = st.columns(2)
     with col_t1:
-        st.subheader("Distribución de datos por Grado SAE")
+        st.subheader("Distribución por Norma Comercial (SAE Grade)")
         t_aceros = aceros["SAE Grade"].value_counts().reset_index()
         t_aceros.columns = ["SAE Grade", "Cantidad"]
         st.dataframe(t_aceros, use_container_width=True)
         
     with col_t2:
-        st.subheader("Tratamientos detectados")
+        st.subheader("Procesos térmicos aplicados en la muestra")
         t_trats = aceros["Condition_simple"].value_counts().reset_index()
         t_trats.columns = ["Original", "Cantidad"]
         t_trats["Tratamiento (Español)"] = t_trats["Original"].map(TRADUCCIONES_TRATAMIENTOS)
         st.dataframe(t_trats[["Tratamiento (Español)", "Cantidad"]], use_container_width=True)
 
-    st.subheader("Gráfica interactiva: Propiedades vs Composición Química")
-    prop_c = st.selectbox("Elige la propiedad para contrastar con el %C", PROPIEDADES_MECANICAS)
+    st.subheader("📈 Gráfica Interactiva: Química vs Propiedades Mecánicas")
+    prop_c = st.selectbox("Elige el eje vertical (Y) para cruzarlo con el % de Carbono", PROPIEDADES_MECANICAS)
     
     df_carb = aceros.dropna(subset=["%C", prop_c, "Condition_simple"]).copy()
     df_carb["Tratamiento"] = df_carb["Condition_simple"].map(TRADUCCIONES_TRATAMIENTOS)
     
     fig_c = px.scatter(df_carb, x="%C", y=prop_c, color="Tratamiento", hover_data=["SAE Grade"], trendline="ols")
+    st.caption("🎨 **Tip de lectura:** Si la línea de tendencia sube, la propiedad aumenta con el Carbono; si baja, significa que el Carbono desgasta o reduce esa propiedad.")
     st.plotly_chart(aplicar_layout_plotly(fig_c), use_container_width=True)
 
 
 # ── TAB 3 — TEMPERATURA ──
 with tab_temp:
-    st.header("Parte A — Influencia de la temperatura en el tratamiento")
-    prop_t = st.selectbox("Propiedad mecánica a evaluar por temperatura", PROPIEDADES_MECANICAS, key="sb_p_t")
+    st.header("🌡️ El Efecto del Horno (Influencia de la Temperatura)")
     
+    st.markdown("""
+    <div class="guia-didactica">
+        <p>🔥 <strong>¿Qué pasa aquí adentro?</strong> Cuando metemos el acero al fuego, los átomos internos se reordenan. 
+        Subir la temperatura tiende a relajar las tensiones moleculares del metal (haciéndolo más suave o tenaz). 
+        Analicemos de manera separada los dos tratamientos térmicos más populares de la industria.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    prop_t = st.selectbox("Propiedad mecánica a evaluar frente a los cambios de temperatura", PROPIEDADES_MECANICAS, key="sb_p_t")
     df_temp = aceros.dropna(subset=["Temp_C", prop_t, "Condition_simple"])
     
-    st.subheader("🔵 Análisis en Proceso de Recocido (Annealed)")
+    st.subheader("🔵 Proceso de Recocido (Annealed)")
+    st.caption("El recocido consiste en calentar el metal y enfriarlo muy lentamente. Se usa para ablandar el material y poder mecanizarlo.")
     df_ann = df_temp[df_temp["Condition_simple"] == "Annealed"]
     if not df_ann.empty:
         fig_a = px.scatter(df_ann, x="Temp_C", y=prop_t, color="%C", trendline="ols", color_continuous_scale="Blues")
         st.plotly_chart(aplicar_layout_plotly(fig_a), use_container_width=True)
     else:
-        st.warning("Faltan datos de temperatura para la muestra de Recocido.")
+        st.warning("No hay suficientes registros con temperatura explícita para la muestra de Recocido.")
 
-    st.subheader("🟣 Análisis en Proceso de Normalizado (Normalized)")
+    st.subheader("🟣 Proceso de Normalizado (Normalized)")
+    st.caption("El normalizado calienta el metal a altas temperaturas y se enfría al aire libre. Busca refinar el grano y darle una estructura uniforme y tenaz.")
     df_norm = df_temp[df_temp["Condition_simple"] == "Normalized"]
     if not df_norm.empty:
         fig_n = px.scatter(df_norm, x="Temp_C", y=prop_t, color="%C", trendline="ols", color_continuous_scale="Purples")
         st.plotly_chart(aplicar_layout_plotly(fig_n), use_container_width=True)
     else:
-        st.warning("Faltan datos de temperatura para la muestra de Normalizado.")
+        st.warning("No hay suficientes registros con temperatura explícita para la muestra de Normalizado.")
 
 
 # ── TAB 4 — ANOVA ──
 with tab_anova:
-    st.header("Parte B — Modelado Estadístico Inferencial (ANOVA)")
-    prop_anova = st.selectbox("Propiedad criterio para ANOVA de dos factores", PROPIEDADES_MECANICAS, key="sb_p_a")
+    st.header("🧪 El Detective Estadístico (Análisis ANOVA)")
+    
+    st.markdown("""
+    <div class="guia-didactica">
+        <p>🕵️‍♂️ <strong>¿Quién es el verdadero responsable?</strong> El análisis estadístico ANOVA actúa como un juez. 
+        Evalúa el comportamiento de los materiales y calcula con precisión matemática qué porcentaje de culpa tiene la química básica (% Carbono) 
+        y qué porcentaje es responsabilidad exclusiva del tipo de tratamiento térmico. ¡Busca la columna 'Influencia_%'!</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    prop_anova = st.selectbox("Elige la propiedad criterio para ejecutar el juicio estadístico", PROPIEDADES_MECANICAS, key="sb_p_a")
     
     df_anova = aceros.dropna(subset=["%C", "Condition_simple", prop_anova]).copy()
     if len(df_anova) > 10:
@@ -513,8 +507,23 @@ with tab_anova:
 
 # ── TAB 5 — RECOMENDADOR INTELIGENTE ──
 with tab_recomendador:
-    st.header("🔍 Recomendador Inteligente SteelMatch AI")
-    st.write("Usa los controles del menú lateral de la pantalla para calibrar tu búsqueda manual o adaptada por casos prácticos.")
+    st.header("🔍 Recomendador de Materiales por Similitud Matemática")
+    
+    st.markdown("""
+    <div class="guia-didactica">
+        <p>🤖 <strong>¿Cómo funciona el buscador?</strong> Ajusta tus requisitos técnicos ideales utilizando el menú flotante de la izquierda. 
+        Al hacer clic en buscar, el algoritmo transformará tus deseos en un vector numérico y calculará de forma instantánea qué material real del almacén 
+        se parece más a lo que necesitas para tu proyecto mecánico.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    with st.expander("📚 Glosario rápido de términos (¿Qué significan estas variables?)"):
+        st.markdown("""
+        * **UTS (Ultimate Tensile Strength):** ¿Cuánta fuerza de jalón aguanta el acero antes de partirse en dos pedazos?
+        * **YS (Yield Strength):** El límite elástico. Si lo estiras por debajo de este punto, el metal vuelve a su forma original como una liga. Si lo superas, quedará doblado para siempre.
+        * **Hardness (Dureza HB):** Resistencia de la superficie a ser rayada, penetrada o abollada por agentes externos.
+        * **Elongation (%):** Capacidad del material para estirarse sin romperse. Una alta elongación es ideal si requieres doblar o moldear el metal en frío.
+        """)
 
     if not datos_modelo_limpio.empty:
         scaler = MinMaxScaler()
@@ -538,19 +547,19 @@ with tab_recomendador:
                 match_mat = df_res.iloc[idx]
                 pct_sim = 100 / (1 + dist[0][idx])
 
-                st.success("🎯 Búsqueda analítica completada")
+                st.success("🎯 Búsqueda analítica completada con éxito")
                 c1, c2, c3 = st.columns(3)
                 with c1:
                     st.metric("Grado Comercial Encontrado", f"SAE {match_mat['SAE Grade']}")
                     st.metric("Tratamiento Sugerido", TRADUCCIONES_TRATAMIENTOS.get(match_mat['Condition_simple'], match_mat['Condition_simple']))
                 with c2:
-                    st.metric("Precisión Mecánica", f"{pct_sim:.2f}%")
-                    st.metric("Carbono Real", f"{match_mat['%C']:.3f} %")
+                    st.metric("Precisión / Compatibilidad", f"{pct_sim:.2f}%")
+                    st.metric("Porcentaje de Carbono Real", f"{match_mat['%C']:.3f} %")
                 with c3:
                     st.metric("Resistencia UTS Real", f"{match_mat['UTS (MPa)']} MPa")
-                    st.metric("Dureza Brinel", f"{match_mat['Hardness (HB)']} HB")
+                    st.metric("Dureza Brinell Real", f"{match_mat['Hardness (HB)']} HB")
 
-                st.subheader("📋 Ficha técnica completa del material sugerido")
+                st.subheader("📋 Ficha Técnica Oficial del Material Sugerido")
                 st.dataframe(match_mat.to_frame(name="Especificación Técnica"), use_container_width=True)
 
 
@@ -561,7 +570,7 @@ st.markdown("""
 <div class="conclusion-enriquecida">
     <h3>📢 Conclusión General del Comportamiento de los Aceros</h3>
     <p style="font-size: 15px !important; color: #cbd5e1 !important; line-height: 1.7 !important; margin: 0;">
-        El comportamiento mecánico de los aceros al carbono se rige bajo principios físicos de causa y efecto directos:
+        El comportamiento mecánico de los aceros al carbono se rige bajo principios físicos de causa y efecto directos. El mapa lógico se resume así:
     </p>
     <div class="grid-conclusion">
         <div class="card-conclusion-item">
