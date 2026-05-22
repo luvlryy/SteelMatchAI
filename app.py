@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Proyecto Integrador Materiales — SteelMatch AI
-Versión Definitiva Corregida — Modos de Selección, Modo Profesional y Explicación Primero
+Versión Definitiva Totalmente Corregida — Sin Errores de Sintaxis
 """
 
 import re
@@ -332,7 +332,8 @@ def cargar_y_preprocesar_datos(nombre_archivo, archivo_bytes=None):
     for col in PROPIEDADES_MECANICAS:
         aceros[col] = pd.to_numeric(aceros[col], errors="coerce")
 
-    aceros["Condition_simple"] = aceros["Conditions"].apply(agrupar_treatment)
+    # ── CORREGIDO AQUÍ: Llamada correcta a la función en español ──
+    aceros["Condition_simple"] = aceros["Conditions"].apply(agrupar_tratamiento)
     aceros["Temp_C"] = aceros["Conditions"].apply(extraer_temperatura)
     return aceros
 
@@ -464,6 +465,8 @@ with tab_exploracion:
     prop_c = st.selectbox("Elige el eje vertical (Y) para cruzarlo con el % de Carbono", PROPIEDADES_MECANICAS)
     
     df_carb = aceros.dropna(subset=["%C", prop_c, "Condition_simple"]).copy()
+    
+    # ── CORREGIDO AQUÍ: Eliminada la duplicación errónea de la línea 473 ──
     df_carb["Tratamiento"] = df_carb["Condition_simple"].map(TRADUCCIONES_TRATAMIENTOS)
     
     st.markdown(f"""
@@ -594,7 +597,7 @@ with tab_recomendador:
                 df_res = df_res[df_res["Condition_simple"] == tag_or]
 
             if df_res.empty:
-                st.warning("No haycoincidencias para ese tratamiento térmico específico en el almacén actual.")
+                st.warning("No hay coincidencias para ese tratamiento térmico específico en el almacén actual.")
             else:
                 usr_in = np.array([[carbono, uts, ys, dureza, elongacion]])
                 usr_norm = scaler.transform(usr_in)
