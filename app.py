@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Proyecto Integrador Materiales — SteelMatch AI (Versión Mejorada y Sin Superposiciones)
+Proyecto Integrador Materiales — SteelMatch AI (Versión Definitiva)
 """
 
 import re
@@ -20,6 +20,17 @@ from statsmodels.formula.api import ols
 # ── SILENCIAR ADVERTENCIAS MATEMÁTICAS EN LA INTERFAZ ──
 warnings.filterwarnings("ignore", category=UserWarning)
 
+
+# ==========================================================
+# CONFIGURACIÓN DE LA PÁGINA
+# ==========================================================
+
+st.set_page_config(
+    page_title="SteelMatch AI | Quantum Materials",
+    page_icon="⚙️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # ==========================================================
 # CONFIGURACIÓN GENERAL Y PALETA DE COLORES
@@ -42,7 +53,7 @@ COLUMNAS_MODELO = [
     "Elongation (%)"
 ]
 
-# Diseño base para gráficas - Futuristic Console (ARREGLADO PARA EVITAR SUPERPOSICIONES)
+# Diseño base para gráficas - Futuristic Console
 PLOTLY_LAYOUT = dict(
     template="plotly_dark",
     paper_bgcolor="rgba(0,0,0,0)",   
@@ -54,25 +65,13 @@ PLOTLY_LAYOUT = dict(
         bordercolor="#06b6d4", 
         borderwidth=1,
         orientation="h",
-        yanchor="top",        # Cambiado para evitar choques con el título
-        y=-0.25,              # Movido debajo de la gráfica
+        yanchor="bottom",
+        y=1.05,
         xanchor="center",
         x=0.5,
         font=dict(color="#ffffff")
     ),
-    margin=dict(t=80, b=120, l=50, r=40) # Mayor margen superior e inferior para respirar
-)
-
-
-# ==========================================================
-# CONFIGURACIÓN DE LA PÁGINA
-# ==========================================================
-
-st.set_page_config(
-    page_title="SteelMatch AI | Quantum Materials",
-    page_icon="⚙️",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    margin=dict(t=80, b=80, l=50, r=40) 
 )
 
 
@@ -159,7 +158,9 @@ st.markdown("""
     }
     
     h3, h4 { color: #ffffff !important; font-weight: 600 !important; }
-    h5 { color: #34d399 !important; font-weight: 700 !important; margin-top: 15px !important; margin-bottom: 5px !important; font-size: 1.1rem !important;}
+    
+    /* Personalización de subtítulos Markdown */
+    .stMarkdown h3 { color: #06b6d4 !important; font-size: 1.5rem !important; margin-top: 20px !important;}
 
     div[data-baseweb="select"] > div, .stNumberInput input, .stSlider > div {
         background-color: rgba(15, 23, 42, 0.9) !important; 
@@ -222,7 +223,8 @@ st.markdown("""
         border-radius: 12px;
         margin-bottom: 25px;
     }
-    .intro-seccion h4 { margin-top: 0 !important; color: #06b6d4 !important; margin-bottom: 15px !important; font-size: 1.5rem !important;}
+    
+    .intro-seccion h2 { margin-top: 0 !important; border: none; padding-left: 0; color: #34d399 !important; font-size: 1.8rem !important; text-transform: none;}
 
     .leyenda-grafica {
         background: rgba(2, 6, 23, 0.8);
@@ -246,7 +248,6 @@ st.markdown("""
         margin-bottom: 30px;
         border-radius: 4px 8px 8px 4px;
     }
-    .conclusion-box h4 { color: #a78bfa !important; margin-top: 0 !important; margin-bottom: 10px !important; font-size: 1.1rem !important;}
 
     .stTabs [data-baseweb="tab"] { 
         color: #ffffff !important; 
@@ -346,11 +347,21 @@ def cargar_y_preprocesar_datos(nombre_archivo):
 
 
 # ==========================================================
-# MENÚ LATERAL: CONFIGURACIÓN Y GLOSARIO INTEGRADO
+# MENÚ LATERAL: GLOSARIO DESTACADO Y CONFIGURACIÓN
 # ==========================================================
 
 aceros = cargar_y_preprocesar_datos(DEFAULT_DATA_FILE)
 
+# Glosario ahora es altamente visible al tope de la barra lateral
+st.sidebar.markdown("### 📖 Glosario Rápido")
+st.sidebar.info("""
+**💪 UTS (Fuerza Máxima):** Cuánta fuerza bruta soporta antes de partirse en dos.  
+**📐 YS (Límite Elástico):** Cuánto peso aguanta antes de quedarse deformado para siempre.  
+**💎 Dureza (HB):** Qué tan difícil es rayarlo o abollarlo.  
+**🎗️ Elongación (%):** Qué tanto se estira como liga antes de romperse.
+""")
+
+st.sidebar.markdown("---")
 st.sidebar.header("⚙️ Configuración del Protocolo")
 
 modo_usuario = st.sidebar.radio("👨‍💻 Modo de Operación:", ["Niveles Predefinidos (Guiado)", "Parámetros Manuales (Avanzado)"])
@@ -399,17 +410,6 @@ tratamiento_elegido_espanol = st.sidebar.selectbox("Protocolo Térmico (Horno)",
 
 buscar = st.sidebar.button("🚀 Ejecutar Algoritmo de Búsqueda")
 
-st.sidebar.markdown("---")
-with st.sidebar.expander("📖 GLOSARIO", expanded=False):
-    st.markdown("""
-    <div style="font-size: 14px; color: #ffffff; line-height: 1.6;">
-        <p><strong style="color:#06b6d4">💪 UTS (Fuerza Máxima):</strong> Cuánta fuerza bruta soporta antes de partirse en dos.</p>
-        <p><strong style="color:#06b6d4">📐 YS (Límite Elástico):</strong> Cuánto peso aguanta antes de quedarse deformado para siempre.</p>
-        <p><strong style="color:#06b6d4">💎 Dureza (HB):</strong> Qué tan difícil es rayarlo o abollarlo.</p>
-        <p><strong style="color:#06b6d4">🎗️ Elongación (%):</strong> Qué tanto se estira como liga antes de romperse.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
 
 # ==========================================================
 # ESTRUCTURA DE PESTAÑAS (Módulos Integrados)
@@ -426,26 +426,25 @@ tab_inicio, tab_inventario, tab_exploracion, tab_temp, tab_anova, tab_recomendad
 with tab_inicio:
     st.markdown("""
     <div class="intro-seccion">
-        <h4>👋 ¡Bienvenido a SteelMatch AI! Tu simulador metalúrgico de bolsillo.</h4>
+        <h2>👋 ¡Bienvenido a SteelMatch AI! Tu simulador metalúrgico de bolsillo.</h2>
         <p>Descubre el increíble mundo de los aceros al carbono sin necesidad de ser un experto en ciencia de materiales. Imagina que el acero es como la receta de un pastel: si cambias los ingredientes principales (como el % de Carbono) o cambias la forma de hornearlo (los Tratamientos Térmicos), el resultado final tendrá "superpoderes" físicos completamente diferentes. ¡Usa las pestañas superiores para explorar los datos reales!</p>
-        
-        <hr style="border-color: #06b6d4; opacity: 0.4; margin: 25px 0;">
-        
-        <h5>🎯 ¿Qué hicimos? (Objetivos y Metodología)</h5>
-        <p>Desarrollamos una plataforma interactiva que actúa como un microscopio de datos. Tomamos un gran volumen de información real sobre distintas aleaciones comerciales de acero SAE y las procesamos usando lenguajes de programación. Limpiamos, agrupamos y modelamos matemáticamente la información para generar visualizaciones interactivas que revelan el comportamiento oculto del material.</p>
-        
-        <h5>💡 ¿Por qué lo hicimos? (Hipótesis y Razonamiento)</h5>
-        <p>Porque comprender los materiales es vital para construir el mundo moderno (desde el chasis de un auto hasta la estructura de un puente). Nuestra hipótesis principal sostiene que <strong>el porcentaje de Carbono (%C) y el protocolo de horneado (Tratamiento Térmico) son los factores determinantes</strong> absolutos sobre la resistencia (UTS), límite elástico (YS), dureza (HB) y flexibilidad (elongación) del metal. Creamos este panel para probarlo con datos empíricos.</p>
-        
-        <h5>📊 ¿Qué encontramos? (Conclusiones Destacadas)</h5>
-        <ul>
-            <li><strong>El Carbono da fuerza bruta, pero roba flexibilidad:</strong> Observamos una clara tendencia donde el aumento de carbono dispara exponencialmente la Dureza y el UTS, pero hace caer en picada la Elongación (haciendo el material más frágil y menos elástico).</li>
-            <li><strong>El horno transforma el metal:</strong> Confirmamos que protocolos como el "Recocido" relajan las tensiones del metal maximizando su capacidad de estiramiento, mientras que métodos más agresivos como el "Templado" lo vuelven extremadamente duro para resistir el desgaste.</li>
-            <li><strong>El calor debilita a favor de la tenacidad:</strong> Encontramos que aumentar la temperatura en tratamientos específicos tiende a reducir ligeramente la fuerza estructural, pero a cambio estabiliza el material para que no se quiebre de forma sorpresiva.</li>
-        </ul>
     </div>
     """, unsafe_allow_html=True)
     
+    st.markdown("### 🎯 ¿Qué hicimos? (Objetivos y Metodología)")
+    st.write("Desarrollamos una plataforma interactiva que actúa como un microscopio de datos. Tomamos un gran volumen de información real sobre distintas aleaciones comerciales de acero SAE y las procesamos usando lenguajes de programación. Limpiamos, agrupamos y modelamos matemáticamente la información para generar visualizaciones interactivas que revelan el comportamiento oculto del material.")
+    
+    st.markdown("### 💡 ¿Por qué lo hicimos? (Hipótesis y Razonamiento)")
+    st.write("Porque comprender los materiales es vital para construir el mundo moderno (desde el chasis de un auto hasta la estructura de un puente). Nuestra hipótesis principal sostiene que **el porcentaje de Carbono (%C) y el protocolo de horneado (Tratamiento Térmico) son los factores determinantes** absolutos sobre la resistencia (UTS), límite elástico (YS), dureza (HB) y flexibilidad (elongación) del metal. Creamos este panel para probarlo con datos empíricos.")
+    
+    st.markdown("### 📊 ¿Qué encontramos? (Conclusiones Destacadas)")
+    st.markdown("""
+    * **El Carbono da fuerza bruta, pero roba flexibilidad:** Observamos una clara tendencia donde el aumento de carbono dispara exponencialmente la Dureza y el UTS, pero hace caer en picada la Elongación (haciendo el material más frágil y menos elástico).
+    * **El horno transforma el metal:** Confirmamos que protocolos como el "Recocido" relajan las tensiones del metal maximizando su capacidad de estiramiento, mientras que métodos más agresivos como el "Templado" lo vuelven extremadamente duro para resistir el desgaste.
+    * **El calor debilita a favor de la tenacidad:** Encontramos que aumentar la temperatura en tratamientos específicos tiende a reducir ligeramente la fuerza estructural, pero a cambio estabiliza el material para que no se quiebre de forma sorpresiva.
+    """)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
     col1.metric("Aceros SAE Analizados", len(aceros))
     col2.metric("Grados Comerciales Identificados", aceros["SAE Grade"].nunique())
@@ -478,8 +477,8 @@ with tab_inventario:
 
     st.markdown("""
     <div class="conclusion-box">
-        <h4>💡 Conclusión del Inventario</h4>
-        <p>Al observar las tablas, podemos concluir que la base de datos está dominada principalmente por tratamientos comerciales básicos como el "Laminado" (Hot/Cold Rolled) y procesos de estandarización como el "Normalizado". Esto significa que la mayor parte de nuestra data refleja las condiciones en las que el acero se vende comúnmente en la industria primaria, antes de recibir tratamientos térmicos especializados y costosos como el Templado (Quenched).</p>
+        <strong>💡 Conclusión del Inventario:</strong>
+        <p style="margin-top: 5px;">Al observar las tablas, podemos concluir que la base de datos está dominada principalmente por tratamientos comerciales básicos como el "Laminado" (Hot/Cold Rolled) y procesos de estandarización como el "Normalizado". Esto significa que la mayor parte de nuestra data refleja las condiciones en las que el acero se vende comúnmente en la industria primaria, antes de recibir tratamientos térmicos especializados y costosos como el Templado (Quenched).</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -493,7 +492,6 @@ with tab_exploracion:
     </div>
     """, unsafe_allow_html=True)
 
-    # REQUERIMIENTO SECCIÓN 4 DE LA GUÍA: Gráfica Multivariable Combinada
     st.subheader("🔬 Curva de Tendencia Multivariable Integrada")
     df_multivar = aceros.dropna(subset=["%C"] + PROPIEDADES_MECANICAS).copy()
     df_multivar["Elongation (%) x 10"] = df_multivar["Elongation (%)"] * 10
@@ -520,13 +518,12 @@ with tab_exploracion:
 
     st.markdown("""
     <div class="conclusion-box">
-        <h4>💡 Conclusión Multivariable</h4>
-        <p>Esta gráfica demuestra el "trade-off" (intercambio) fundamental de la metalurgia: A medida que avanzamos hacia la derecha (más carbono), las nubes de puntos de Resistencia (UTS) y Límite Elástico (YS) suben radicalmente. Sin embargo, la nube roja (Elongación) va hacia abajo. <strong>Conclusión:</strong> El carbono te da un metal que soporta mucho más peso antes de deformarse, pero sacrifica por completo su capacidad de estirarse (se vuelve frágil como el vidrio frente a impactos repentinos).</p>
+        <strong>💡 Conclusión Multivariable:</strong>
+        <p style="margin-top: 5px;">Esta gráfica demuestra el "trade-off" (intercambio) fundamental de la metalurgia: A medida que avanzamos hacia la derecha (más carbono), las nubes de puntos de Resistencia (UTS) y Límite Elástico (YS) suben radicalmente. Sin embargo, la nube roja (Elongación) va hacia abajo. <strong>Conclusión:</strong> El carbono te da un metal que soporta mucho más peso antes de deformarse, pero sacrifica por completo su capacidad de estirarse (se vuelve frágil como el vidrio frente a impactos repentinos).</p>
     </div>
     """, unsafe_allow_html=True)
     st.markdown("---")
     
-    # Análisis específico por propiedad individual
     st.subheader("🎯 Análisis Individual: Propiedad vs Carbono por Tratamiento")
     prop_c = st.selectbox("Selecciona la propiedad física a aislar:", PROPIEDADES_MECANICAS)
     
@@ -550,7 +547,6 @@ with tab_exploracion:
     )
     st.plotly_chart(aplicar_layout_estetico(fig_c), use_container_width=True, theme=None)
 
-    # REQUERIMIENTO SECCIÓN 5 PARTE 2: Boxplots por Tratamiento
     st.markdown("---")
     st.subheader(f"📦 Distribución y Dispersión Estadística de {prop_c} por Tratamiento")
     
@@ -569,13 +565,14 @@ with tab_exploracion:
         color_discrete_sequence=px.colors.qualitative.Alphabet,
         points="all"
     )
-    fig_box.update_layout(title=f"Boxplot: ¿Qué tratamiento garantiza mejor {prop_c}?")
+    # OCULTAMOS LA LEYENDA DEL BOXPLOT PARA QUE NO CHOQUE CON EL EJE X
+    fig_box.update_layout(title=f"Boxplot: ¿Qué tratamiento garantiza mejor {prop_c}?", showlegend=False, xaxis_title="Categoría de Protocolo Térmico")
     st.plotly_chart(aplicar_layout_estetico(fig_box), use_container_width=True, theme=None)
 
     st.markdown(f"""
     <div class="conclusion-box">
-        <h4>💡 Conclusión del Análisis Individual</h4>
-        <p>Al analizar los puntos de dispersión y las cajas, queda en evidencia que el tratamiento térmico "mueve" las gráficas enteras hacia arriba o hacia abajo, sin importar tanto el carbono. Por ejemplo, los procesos trabajados "en frío" o con temple tienden a estar siempre en la parte más alta si hablamos de Dureza y Resistencia, demostrando que la forma física en que forzamos o enfriamos el metal altera su microestructura cristalina para hacerlo más rígido que su estado natural.</p>
+        <strong>💡 Conclusión del Análisis Individual:</strong>
+        <p style="margin-top: 5px;">Al analizar los puntos de dispersión y las cajas, queda en evidencia que el tratamiento térmico "mueve" las gráficas enteras hacia arriba o hacia abajo, sin importar tanto el carbono. Por ejemplo, los procesos trabajados "en frío" o con temple tienden a estar siempre en la parte más alta si hablamos de Dureza y Resistencia, demostrando que la forma física en que forzamos o enfriamos el metal altera su microestructura cristalina para hacerlo más rígido que su estado natural.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -622,8 +619,8 @@ with tab_temp:
 
     st.markdown("""
     <div class="conclusion-box">
-        <h4>💡 Conclusión Térmica</h4>
-        <p>Al analizar ambos gráficos térmicos, notamos que a medida que la temperatura de austenitización (calentamiento en horno) aumenta, hay una leve tendencia a que caigan la dureza y resistencia, y aumente la homogeneidad. En el gráfico de Normalizado solemos ver "columnas" o líneas verticales de puntos. Esto ocurre porque la industria utiliza temperaturas estandarizadas redondas (como 870°C o 900°C) para procesar tandas masivas de acero, lo que agrupa múltiples muestras químicas diferentes bajo una sola temperatura de receta comercial.</p>
+        <strong>💡 Conclusión Térmica:</strong>
+        <p style="margin-top: 5px;">Al analizar ambos gráficos térmicos, notamos que a medida que la temperatura de austenitización (calentamiento en horno) aumenta, hay una leve tendencia a que caigan la dureza y resistencia, y aumente la homogeneidad. En el gráfico de Normalizado solemos ver "columnas" o líneas verticales de puntos. Esto ocurre porque la industria utiliza temperaturas estandarizadas redondas (como 870°C o 900°C) para procesar tandas masivas de acero, lo que agrupa múltiples muestras químicas diferentes bajo una sola temperatura de receta comercial.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -672,7 +669,7 @@ with tab_anova:
         
         st.plotly_chart(fig_pie, use_container_width=True, theme=None)
 
-        st.markdown("<div class='interpretacion-box'>", unsafe_allow_html=True)
+        st.markdown("<div class='conclusion-box' style='border-left-color: #34d399; background: rgba(52, 211, 153, 0.1);'>", unsafe_allow_html=True)
         st.markdown("### 🧠 Veredicto Final del Juez Estadístico")
         if pct_carbono > pct_tratamiento:
             st.markdown(f"¡El veredicto es contundente! Para modificar **{prop_anova}**, **la receta química es la dueña del balón**. El porcentaje de Carbono tiene un impacto dominante (representa el **{pct_carbono:.1f}%** de la influencia total). Si quieres cambiar este atributo en la vida real, gastarás menos dinero cambiando la fórmula de carbono desde el principio, que tratando de arreglarlo metiéndolo al horno con tratamientos térmicos.")
