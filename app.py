@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Proyecto Integrador Materiales — SteelMatch AI (Versión Futuristic Console)
+Proyecto Integrador Materiales — SteelMatch AI (Versión de Consola Completa)
 """
 
 import re
@@ -95,6 +95,18 @@ TRADUCCIONES_TRATAMIENTOS = {
 
 TRADUCCIONES_INVERSAS = {v: k for k, v in TRADUCCIONES_TRATAMIENTOS.items()}
 
+# Glosario y descripciones técnicas basadas en los requerimientos de la guía de clase
+DESCRIPCIONES_TRATAMIENTOS = {
+    "Annealed": "Calentamiento seguido de un enfriamiento lento y controlado dentro del horno. Alivia tensiones internas, incrementa la ductilidad y facilita los procesos de mecanizado.",
+    "Normalized": "Calentamiento por encima de la temperatura crítica seguido de un enfriamiento al aire libre. Homogeneiza el tamaño de grano de la microestructura y refina las propiedades mecánicas.",
+    "Hot Rolled": "Proceso de deformación mecánica realizado a altas temperaturas (por encima de la temperatura de recristalización). Reduce tensiones de fluencia estructural.",
+    "Cold Drawn": "Estirado o deformación mecánica en frío a temperatura ambiente. Incrementa notoriamente el límite elástico (YS) y la dureza por acritud mecánica.",
+    "Quenched": "Enfriamiento drástico y veloz en agua o aceite desde la fase austenítica. Transforma la estructura en martensita, maximizando la dureza superficial a costa de la fragilidad.",
+    "Tempered": "Tratamiento térmico secundario aplicado posterior al temple. Reduce la fragilidad extrema y estabiliza las tensiones moleculares, restaurando la tenacidad general.",
+    "As Rolled": "Estado comercial en bruto tras pasar por los rodillos de laminación directa, sin tratamientos térmicos de reacondicionamiento estructural posteriores.",
+    "Other": "Tratamientos metalúrgicos de carácter compuesto o variaciones específicas registradas de forma atípica."
+}
+
 
 # ==========================================================
 # ESTILO VISUAL — TEMÁTICA FUTURISTA Y ALTA VISIBILIDAD
@@ -178,7 +190,6 @@ st.markdown("""
     }
 
     /* ── CORRECCIÓN BLINDADA DEL MENÚ DESPLEGABLE (LISTA ABIERTA) ── */
-    /* Forzamos fondo claro/blanco y letras NEGRAS para máxima visibilidad */
     div[data-baseweb="popover"] div[role="listbox"],
     div[data-baseweb="popover"] ul[role="listbox"] {
         background-color: #f8fafc !important; /* Fondo gris muy claro/blanco */
@@ -207,9 +218,8 @@ st.markdown("""
     
     div[data-baseweb="popover"] li[role="option"]:hover *,
     div[data-baseweb="popover"] li[role="option"][aria-selected="true"] * {
-        color: #ffffff !important; /* Letra blanca al resaltar */
+        color: #ffffff !important; 
     }
-
 
     /* Estilo del botón principal - Neon Cyberpunk */
     .stButton>button {
@@ -245,14 +255,14 @@ st.markdown("""
     }
     .intro-seccion h4 {
         margin-top: 0 !important;
-        color: #34d399 !important; /* Verde menta brillante */
+        color: #34d399 !important; 
         margin-bottom: 10px !important;
     }
 
     /* Caja de leyenda de gráficas */
     .leyenda-grafica {
         background: rgba(2, 6, 23, 0.8);
-        border: 1px solid #34d399; /* Borde verde neón */
+        border: 1px solid #34d399; 
         border-left: 5px solid #34d399;
         padding: 15px 20px;
         border-radius: 4px 8px 8px 4px;
@@ -480,13 +490,13 @@ with st.sidebar.expander("📖 GLOSARIO", expanded=False):
 
 
 # ==========================================================
-# ESTRUCTURA DE PESTAÑAS (Módulos)
+# ESTRUCTURA DE PESTAÑAS (Módulos Integrados)
 # ==========================================================
 
 st.title("SteelMatch AI // Conoce todo sobre las características de los aceros")
 
-tab_inicio, tab_exploracion, tab_temp, tab_anova, tab_recomendador = st.tabs([
-    "🏠 Módulo Central", "📊 Matriz Química", "🔥 Protocolo Térmico", "⚖️ Control de Variables", "🔍 Requisitor"
+tab_inicio, tab_inventario, tab_exploracion, tab_temp, tab_anova, tab_recomendador = st.tabs([
+    "🏠 Módulo Central", "📋 Inventario Base", "📊 Matriz Química", "🔥 Protocolo Térmico", "⚖️ Control de Variables", "🔍 Requisitor"
 ])
 
 
@@ -501,7 +511,7 @@ with tab_inicio:
     
     col1, col2, col3 = st.columns(3)
     col1.metric("Aceros SAE Analizados", len(aceros))
-    col2.metric("Grados Comerciales identified", aceros["SAE Grade"].nunique())
+    col2.metric("Grados Comerciales Identificados", aceros["SAE Grade"].nunique())
     col3.metric("Protocolos Térmicos", aceros["Condition_simple"].nunique())
 
     st.markdown("""
@@ -525,7 +535,32 @@ with tab_inicio:
     """, unsafe_allow_html=True)
 
 
-# ── TAB 2 — EXPLORACIÓN (Matriz Química) ──
+# ── TAB 2 — INVENTARIO BASE (Sección 3 de la Guía) ──
+with tab_inventario:
+    st.markdown("""
+    <div class="intro-seccion">
+        <h4>📋 Exploración Inicial e Identificación de Variables</h4>
+        <p>En este bloque se consolida el inventario completo de los registros cargados en el sistema. Puedes inspeccionar qué tipos de grados comerciales (SAE Grade) se encuentran en la matriz y cuántos registros hay de cada uno, así como la clasificación general de los tratamientos mecánicos y térmicos con sus descripciones de aula.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    c_inv1, c_inv2 = st.columns(2)
+    
+    with c_inv1:
+        st.subheader("Lista de Grados de Aceros Disponibles")
+        df_sae_counts = aceros["SAE Grade"].value_counts().reset_index()
+        df_sae_counts.columns = ["Grado comercial (SAE Grade)", "Número de registros"]
+        st.dataframe(df_sae_counts, use_container_width=True, hide_index=True)
+        
+    with c_inv2:
+        st.subheader("Clasificación de Tratamientos")
+        df_treat_counts = aceros["Condition_simple"].value_counts().reset_index()
+        df_treat_counts.columns = ["Tratamiento", "Número de registros"]
+        df_treat_counts["Descripción breve (Fundamento Técnico)"] = df_treat_counts["Tratamiento"].map(DESCRIPCIONES_TRATAMIENTOS)
+        st.dataframe(df_treat_counts, use_container_width=True, hide_index=True)
+
+
+# ── TAB 3 — EXPLORACIÓN (Matriz Química + Mejoras Secciones 4 y 5) ──
 with tab_exploracion:
     st.markdown("""
     <div class="intro-seccion">
@@ -534,6 +569,33 @@ with tab_exploracion:
     </div>
     """, unsafe_allow_html=True)
 
+    # REQUERIMIENTO SECCIÓN 4 DE LA GUÍA: Gráfica Multivariable Combinada con Elongación x10
+    st.subheader("🔬 Curva de Tendencia Multivariable Integrada")
+    df_multivar = aceros.dropna(subset=["%C"] + PROPIEDADES_MECANICAS).copy()
+    df_multivar["Elongation (%) x 10"] = df_multivar["Elongation (%)"] * 10
+    
+    st.markdown("""
+    <div class="leyenda-grafica">
+        📈 <strong>Guía de Escalabilidad (Sección 4):</strong><br>
+        Para hacer las magnitudes comparables en un mismo plano cartesiano, se ha multiplicado la propiedad de <strong>Elongación (%) por 10</strong>. Observa el comportamiento opuesto de la ductilidad frente a los vectores de fuerza estructural (UTS, YS, Dureza) conforme el %C incrementa.
+    </div>
+    """, unsafe_allow_html=True)
+    
+    fig_multi = go.Figure()
+    fig_multi.add_trace(go.Scatter(x=df_multivar["%C"], y=df_multivar["UTS (MPa)"], mode='markers', name='UTS (MPa)', marker=dict(color='#34d399')))
+    fig_multi.add_trace(go.Scatter(x=df_multivar["%C"], y=df_multivar["YS (MPa)"], mode='markers', name='YS (MPa)', marker=dict(color='#06b6d4')))
+    fig_multi.add_trace(go.Scatter(x=df_multivar["%C"], y=df_multivar["Hardness (HB)"], mode='markers', name='Hardness (HB)', marker=dict(color='#a78bfa')))
+    fig_multi.add_trace(go.Scatter(x=df_multivar["%C"], y=df_multivar["Elongation (%) x 10"], mode='markers', name='Elongation (%) x 10', marker=dict(color='#f43f5e')))
+    
+    fig_multi.update_layout(title="Comportamiento Mecánico Simultáneo vs % de Carbono")
+    fig_multi.update_xaxes(title_text="Concentración de Carbono (%C)")
+    fig_multi.update_yaxes(title_text="Magnitud de la Propiedad")
+    st.plotly_chart(aplicar_layout_estetico(fig_multi), use_container_width=True, theme=None)
+
+    st.markdown("---")
+    
+    # Análisis específico por propiedad individual
+    st.subheader("🎯 Análisis Individual por Atributo y Tratamiento")
     prop_c = st.selectbox("Selecciona la propiedad física a evaluar contra el Carbono:", PROPIEDADES_MECANICAS)
     
     df_carb = aceros.dropna(subset=["%C", prop_c, "Condition_simple"]).copy()
@@ -557,8 +619,19 @@ with tab_exploracion:
     )
     st.plotly_chart(aplicar_layout_estetico(fig_c), use_container_width=True, theme=None)
 
+    # REQUERIMIENTO SECCIÓN 5 PARTE 2 DE LA GUÍA: Diagrama de Cajas (Boxplots) por Tratamiento
+    st.subheader(f"📦 Distribución y Dispersión Estadística de {prop_c} por Tratamiento")
+    fig_box = px.box(
+        df_carb, x="Protocolo Térmico", y=prop_c,
+        color="Protocolo Térmico",
+        color_discrete_sequence=px.colors.qualitative.Alphabet,
+        points="all"
+    )
+    fig_box.update_layout(title=f"Boxplot de Distribución de {prop_c} por Categoría Metalúrgica")
+    st.plotly_chart(aplicar_layout_estetico(fig_box), use_container_width=True, theme=None)
 
-# ── TAB 3 — TEMPERATURA (Protocolo Térmico) ──
+
+# ── TAB 4 — TEMPERATURA (Protocolo Térmico // Sección 6) ──
 with tab_temp:
     st.markdown("""
     <div class="intro-seccion">
@@ -595,7 +668,7 @@ with tab_temp:
         st.warning("ERROR: Datos insuficientes registrados para la simulación térmica de normalizado.")
 
 
-# ── TAB 4 — ¿QUÉ INFLUYE MÁS? (Control de Variables // ANOVA Redesigned) ──
+# ── TAB 5 — ¿QUÉ INFLUYE MÁS? (Control de Variables // ANOVA) ──
 with tab_anova:
     st.markdown("""
     <div class="intro-seccion">
@@ -648,7 +721,7 @@ with tab_anova:
         st.markdown("</div>", unsafe_allow_html=True)
 
 
-# ── TAB 5 — RECOMENDADOR INTELIGENTE (Requisitor SAE) ──
+# ── TAB 6 — RECOMENDADOR INTELIGENTE (Requisitor SAE) ──
 with tab_recomendador:
     st.markdown("""
     <div class="intro-seccion">
