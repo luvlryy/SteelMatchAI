@@ -45,13 +45,12 @@ COLUMNAS_MODELO = [
 ]
 
 # Diseño base para gráficas - Futuristic Console
-# Textos blancos puros y cuadrícula neón sutil para visibilidad
 PLOTLY_LAYOUT = dict(
     template="plotly_dark",
     paper_bgcolor="rgba(0,0,0,0)",   
-    plot_bgcolor="rgba(15,23,42,0.4)", # Fondo de gráfica ligeramente visible
+    plot_bgcolor="rgba(15,23,42,0.4)", 
     font=dict(color="#ffffff", family="sans-serif", size=14),
-    title_font=dict(color="#06b6d4", size=20, family="sans-serif"), # Cian brillante
+    title_font=dict(color="#06b6d4", size=20, family="sans-serif"), 
     legend=dict(
         bgcolor="rgba(2, 6, 23, 0.9)", 
         bordercolor="#06b6d4", 
@@ -165,7 +164,6 @@ st.markdown("""
     }
 
     /* Selectores y campos de entrada: Futuristic Console look */
-    /* Fondo oscuro transparente, borde cian neón, texto BLANCO puro */
     div[data-baseweb="select"] > div, .stNumberInput input, .stSlider > div {
         background-color: rgba(15, 23, 42, 0.9) !important; 
         border: 1px solid #06b6d4 !important; 
@@ -173,10 +171,26 @@ st.markdown("""
         box-shadow: 0 0 5px rgba(6, 182, 212, 0.2);
     }
     
-    /* Texto DENTRO del selector - BLANCO MÁXIMO */
     div[data-baseweb="select"] * {
         color: #ffffff !important; 
         font-weight: 600;
+    }
+
+    /* ── CORRECCIÓN DEL MENÚ DESPLEGABLE (POPOVER) ── */
+    div[data-baseweb="popover"] > div, ul[role="listbox"], div[role="listbox"] {
+        background-color: #020617 !important;
+        border: 1px solid #06b6d4 !important;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3) !important;
+    }
+    li[role="option"] {
+        background-color: transparent !important;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+    }
+    li[role="option"]:hover, li[role="option"][aria-selected="true"] {
+        background-color: rgba(6, 182, 212, 0.3) !important;
+        color: #06b6d4 !important;
     }
 
     /* Estilo del botón principal - Neon Cyberpunk */
@@ -217,7 +231,7 @@ st.markdown("""
         margin-bottom: 10px !important;
     }
     .intro-seccion p {
-        color: #ffffff !important; /* Texto blanco puro */
+        color: #ffffff !important;
     }
 
     /* Caja de leyenda de gráficas */
@@ -259,7 +273,7 @@ st.markdown("""
     }
     
     .card-conclusion-item strong {
-        color: #06b6d4 !important; /* Cian neón */
+        color: #06b6d4 !important; 
         font-size: 16px;
         display: flex;
         align-items: center;
@@ -269,7 +283,7 @@ st.markdown("""
     .card-conclusion-item p {
         margin: 10px 0 0 0 !important;
         font-size: 15px !important;
-        color: #ffffff !important; /* Blanco puro */
+        color: #ffffff !important; 
     }
 
     /* Caja de interpretación de ANOVA */
@@ -340,10 +354,8 @@ def extraer_temperatura(condicion):
 
 def aplicar_layout_estetico(fig):
     fig.update_layout(**PLOTLY_LAYOUT)
-    # Cuadrícula neón cian sutil
     fig.update_xaxes(gridcolor="rgba(6, 182, 212, 0.1)", zerolinecolor="rgba(6, 182, 212, 0.3)", showgrid=True)
     fig.update_yaxes(gridcolor="rgba(6, 182, 212, 0.1)", zerolinecolor="rgba(6, 182, 212, 0.3)", showgrid=True)
-    # Puntos más grandes y brillantes con borde
     fig.update_traces(
         marker=dict(size=11, opacity=0.9, line=dict(width=1.5, color='#ffffff')),
         selector=dict(mode='markers')
@@ -392,7 +404,7 @@ def cargar_y_preprocesar_datos(nombre_archivo):
 
 aceros = cargar_y_preprocesar_datos(DEFAULT_DATA_FILE)
 
-st.sidebar.header("⚙️ ¡Busca tu material según las características deseadas")
+st.sidebar.header("⚙️ Configuración del Protocolo")
 
 modo_usuario = st.sidebar.radio("👨‍💻 Modo de Operación:", ["Niveles Predefinidos (Guiado)", "Parámetros Manuales (Avanzado)"])
 
@@ -441,7 +453,7 @@ tratamiento_elegido_espanol = st.sidebar.selectbox("Protocolo Térmico (Horno)",
 buscar = st.sidebar.button("🚀 Ejecutar Algoritmo de Búsqueda")
 
 st.sidebar.markdown("---")
-with st.sidebar.expander("📖 Glosario de Materiales", expanded=False):
+with st.sidebar.expander("📖 Cripto-Glosario de Materiales", expanded=False):
     st.markdown("""
     <div style="font-size: 14px; color: #ffffff; line-height: 1.6;">
         <p><strong style="color:#06b6d4">💪 UTS (Fuerza Máxima):</strong> Cuánta fuerza bruta soporta antes de partirse en dos.</p>
@@ -456,7 +468,7 @@ with st.sidebar.expander("📖 Glosario de Materiales", expanded=False):
 # ESTRUCTURA DE PESTAÑAS (Módulos)
 # ==========================================================
 
-st.title("SteelMatch AI // Conoce todo acerca de los aceros")
+st.title("SteelMatch AI // Quantum Materials Analysis")
 
 tab_inicio, tab_exploracion, tab_temp, tab_anova, tab_recomendador = st.tabs([
     "🏠 Módulo Central", "📊 Matriz Química", "🔥 Protocolo Térmico", "⚖️ Control de Variables", "🔍 Requisitor"
@@ -521,13 +533,12 @@ with tab_exploracion:
     </div>
     """, unsafe_allow_html=True)
 
-    # Gráfica Neón usando paleta qualitative (Vibrante)
     fig_c = px.scatter(
         df_carb, x="%C", y=prop_c, 
         color="Protocolo Térmico", 
         hover_data=["SAE Grade"], 
         trendline="ols",
-        color_discrete_sequence=px.colors.qualitative.Alphabet # Paleta muy vibrante neón
+        color_discrete_sequence=px.colors.qualitative.Alphabet 
     )
     st.plotly_chart(aplicar_layout_estetico(fig_c), use_container_width=True, theme=None)
 
@@ -555,7 +566,6 @@ with tab_temp:
     st.subheader("🔵 Protocolo: Recocido // Enfriamiento Controlado Lento")
     df_ann = df_temp[df_temp["Condition_simple"] == "Annealed"]
     if not df_ann.empty:
-        # Escala neón Teal/verde para recocido
         fig_a = px.scatter(df_ann, x="Temp_C", y=prop_t, color="%C", trendline="ols", color_continuous_scale="Viridis")
         st.plotly_chart(aplicar_layout_estetico(fig_a), use_container_width=True, theme=None)
     else:
@@ -564,7 +574,6 @@ with tab_temp:
     st.subheader("🟣 Protocolo: Normalizado // Enfriamiento al Aire libre")
     df_norm = df_temp[df_temp["Condition_simple"] == "Normalized"]
     if not df_norm.empty:
-        # Escala neón Púrpura para normalizado
         fig_n = px.scatter(df_norm, x="Temp_C", y=prop_t, color="%C", trendline="ols", color_continuous_scale="Plasma")
         st.plotly_chart(aplicar_layout_estetico(fig_n), use_container_width=True, theme=None)
     else:
@@ -595,12 +604,11 @@ with tab_anova:
         
         st.subheader(f"Vector de Control de Atribución para: {prop_anova}")
         
-        # Gráfica de anillo (Donut) con colores neón de alto contraste
         fig_pie = go.Figure(data=[go.Pie(
             labels=["Factor 1: Química<br>(% Carbono)", "Factor 2: Protocolo<br>(Tratamiento Térmico)", "Factor 3: Residual<br>(Variabilidad/Misterios)"],
             values=[pct_carbono, pct_tratamiento, pct_otros],
             hole=.6,
-            marker_colors=["#06b6d4", "#a78bfa", "#334155"], # Cian Neón, Violeta neón, Gris oscuro
+            marker_colors=["#06b6d4", "#a78bfa", "#334155"], 
             textinfo='label+percent',
             textfont_size=16,
             hoverinfo='label+percent'
