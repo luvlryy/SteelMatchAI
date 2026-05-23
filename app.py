@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Proyecto Integrador Materiales — SteelMatch AI (Versión Alto Contraste)
+Proyecto Integrador Materiales — SteelMatch AI (Versión Futuristic Console)
 """
 
 import re
@@ -44,16 +44,17 @@ COLUMNAS_MODELO = [
     "Elongation (%)"
 ]
 
-# Diseño base para gráficas - Letras blancas para máximo contraste
+# Diseño base para gráficas - Futuristic Console
+# Textos blancos puros y cuadrícula neón sutil para visibilidad
 PLOTLY_LAYOUT = dict(
     template="plotly_dark",
     paper_bgcolor="rgba(0,0,0,0)",   
-    plot_bgcolor="rgba(15,23,42,0.3)",
+    plot_bgcolor="rgba(15,23,42,0.4)", # Fondo de gráfica ligeramente visible
     font=dict(color="#ffffff", family="sans-serif", size=14),
-    title_font=dict(color="#93c5fd", size=18, family="sans-serif"),
+    title_font=dict(color="#06b6d4", size=20, family="sans-serif"), # Cian brillante
     legend=dict(
-        bgcolor="rgba(15,23,42,0.9)", 
-        bordercolor="#64748b", 
+        bgcolor="rgba(2, 6, 23, 0.9)", 
+        bordercolor="#06b6d4", 
         borderwidth=1,
         orientation="h",
         yanchor="bottom",
@@ -71,7 +72,7 @@ PLOTLY_LAYOUT = dict(
 # ==========================================================
 
 st.set_page_config(
-    page_title="SteelMatch AI",
+    page_title="SteelMatch AI | Quantum Materials",
     page_icon="⚙️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -97,38 +98,45 @@ TRADUCCIONES_INVERSAS = {v: k for k, v in TRADUCCIONES_TRATAMIENTOS.items()}
 
 
 # ==========================================================
-# ESTILO VISUAL — ALTO CONTRASTE Y LEGIBILIDAD
+# ESTILO VISUAL — TEMÁTICA FUTURISTA Y ALTA VISIBILIDAD
 # ==========================================================
 
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Syne:wght@700;800&display=swap');
 
-    /* Fondo principal: Tonos oscuros suaves */
+    /* Fondo principal: Futuristic Grid */
     .stApp {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+        background-color: #020617;
+        background-image: 
+            linear-gradient(rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
+        background-size: 50px 50px;
+        background-position: -1px -1px;
         background-attachment: fixed;
     }
 
-    /* TEXTO GENERAL BLANCO PARA LEER SIN ESFUERZO */
-    html, body, [class*="css"] {
+    /* TEXTO GENERAL BLANCO BRILLANTE PARA MÁXIMA LEGIBILIDAD */
+    html, body, [class*="css"], p, span, label, li {
         font-family: 'Inter', sans-serif;
         color: #ffffff !important; 
     }
     
-    p, span, label, li {
-        color: #ffffff !important;
+    p {
+        font-size: 15px !important;
+        line-height: 1.6 !important;
     }
 
-    /* Títulos agradables a la vista */
+    /* Títulos agradables a la vista con degradado neón */
     h1 { 
+        font-family: 'Syne', sans-serif !important;
         font-weight: 800 !important;
-        background: linear-gradient(90deg, #e2e8f0, #ffffff, #e2e8f0);
+        background: linear-gradient(90deg, #34d399, #ffffff, #06b6d4);
         background-size: 200% auto;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         animation: shimmer 5s linear infinite;
-        font-size: 2.5rem !important;
+        font-size: 2.8rem !important;
     }
 
     @keyframes shimmer {
@@ -137,59 +145,94 @@ st.markdown("""
     }
 
     h2 {
-        color: #93c5fd !important; /* Azul más brillante */
+        color: #06b6d4 !important; /* Cian Brillante neón */
         font-weight: 700 !important;
-        border-left: 4px solid #60a5fa;
+        border-left: 5px solid #06b6d4;
         padding-left: 15px;
-        margin-top: 2rem !important;
+        margin-top: 2.5rem !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
     
     h3, h4 {
-        color: #f8fafc !important; 
+        color: #ffffff !important; 
+        font-weight: 600 !important;
     }
 
-    /* Selectores: El fondo es blanco, así que forzamos la letra a negro oscuro aquí */
-    div[data-baseweb="select"] > div {
-        background-color: #f8fafc !important; 
-        border: 1px solid #94a3b8 !important;
+    /* Selectores y campos de entrada: Futuristic Console look */
+    /* Fondo oscuro transparente, borde cian neón, texto BLANCO puro */
+    div[data-baseweb="select"] > div, .stNumberInput input, .stSlider > div {
+        background-color: rgba(15, 23, 42, 0.9) !important; 
+        border: 1px solid #06b6d4 !important; 
         border-radius: 8px;
+        box-shadow: 0 0 5px rgba(6, 182, 212, 0.2);
     }
+    
+    /* Texto DENTRO del selector - BLANCO MÁXIMO */
     div[data-baseweb="select"] * {
-        color: #020617 !important; /* Negro súper oscuro */
-        font-weight: 700;
+        color: #ffffff !important; 
+        font-weight: 600;
     }
 
-    /* Cajas de introducción y guías (Textos en blanco puro) */
+    /* Estilo del botón principal - Neon Cyberpunk */
+    .stButton>button {
+        background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        height: 3em;
+        width: 100%;
+        font-size: 16px;
+        font-weight: 700;
+        font-family: 'Syne', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+    }
+
+    .stButton>button:hover {
+        background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+    }
+
+    /* Cajas de introducción y guías (Mantenemos blanco puro adentro) */
     .intro-seccion {
-        background: rgba(96, 165, 250, 0.15);
-        border: 1px solid rgba(96, 165, 250, 0.4);
+        background: rgba(15, 23, 42, 0.6);
+        border: 2px solid #06b6d4;
+        box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
         padding: 20px;
         border-radius: 12px;
         margin-bottom: 25px;
     }
     .intro-seccion h4 {
         margin-top: 0 !important;
-        color: #bfdbfe !important; /* Azul hielo muy claro */
+        color: #34d399 !important; /* Verde menta brillante */
         margin-bottom: 10px !important;
     }
     .intro-seccion p {
-        color: #ffffff !important;
-        font-size: 15px !important;
+        color: #ffffff !important; /* Texto blanco puro */
     }
 
+    /* Caja de leyenda de gráficas */
     .leyenda-grafica {
-        background: rgba(15, 23, 42, 0.8);
-        border-left: 4px solid #34d399;
+        background: rgba(2, 6, 23, 0.8);
+        border: 1px solid #34d399; /* Borde verde neón */
+        border-left: 5px solid #34d399;
         padding: 15px 20px;
-        border-radius: 0 8px 8px 0;
+        border-radius: 4px 8px 8px 4px;
         margin-top: 10px;
         margin-bottom: 25px;
         font-size: 15px;
         line-height: 1.6;
         color: #ffffff !important;
     }
+    .leyenda-grafica strong {
+        color: #34d399 !important;
+    }
 
-    /* Tarjetas de Conclusión */
+    /* Tarjetas de Conclusión en cuadrícula */
     .grid-conclusion {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -198,19 +241,20 @@ st.markdown("""
     }
     
     .card-conclusion-item {
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(148, 163, 184, 0.2);
         border-radius: 10px;
         padding: 20px;
-        transition: transform 0.2s;
+        transition: transform 0.2s, box-shadow 0.2s;
     }
     .card-conclusion-item:hover {
         transform: translateY(-5px);
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(15, 23, 42, 0.9);
+        box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
     }
     
     .card-conclusion-item strong {
-        color: #93c5fd !important;
+        color: #06b6d4 !important; /* Cian neón */
         font-size: 16px;
         display: flex;
         align-items: center;
@@ -223,24 +267,41 @@ st.markdown("""
         color: #ffffff !important; /* Blanco puro */
     }
 
+    /* Caja de interpretación de ANOVA */
     .interpretacion-box {
-        background: linear-gradient(to right, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
-        border: 1px solid rgba(16, 185, 129, 0.4);
-        border-radius: 10px;
+        background: rgba(2, 6, 23, 0.8);
+        border: 2px solid #34d399;
+        border-radius: 12px;
         padding: 20px;
         margin-top: 20px;
+        box-shadow: 0 0 10px rgba(52, 211, 153, 0.2);
     }
-    .interpretacion-box p, .interpretacion-box h3 {
-        color: #ffffff !important;
-    }
+    .interpretacion-box p { color: #ffffff !important; }
+    .interpretacion-box h3 { color: #34d399 !important; }
 
     /* Ajustes específicos de las pestañas */
-    .stTabs [data-baseweb="tab"] { color: #cbd5e1 !important; font-weight: 600; }
-    .stTabs [aria-selected="true"] { color: #ffffff !important; font-weight: 800; border-bottom-color: #60a5fa !important; }
+    .stTabs [data-baseweb="tab"] { 
+        color: #ffffff !important; 
+        font-weight: 600; 
+        background-color: rgba(15, 23, 42, 0.3);
+        border-radius: 8px 8px 0 0;
+        margin-right: 5px;
+    }
+    .stTabs [aria-selected="true"] { 
+        color: #06b6d4 !important; 
+        font-weight: 800; 
+        border-bottom-color: #06b6d4 !important; 
+        background-color: rgba(15, 23, 42, 0.7) !important;
+    }
     
     /* Métricas numéricas súper visibles */
     [data-testid="stMetricValue"] { color: #ffffff !important; font-weight: 800 !important; }
-    [data-testid="stMetricLabel"] { color: #bfdbfe !important; font-size: 14px !important; }
+    [data-testid="stMetricLabel"] { color: #06b6d4 !important; font-size: 14px !important; text-transform: uppercase;}
+    [data-testid="metric-container"] {
+        background: rgba(15, 23, 42, 0.6) !important;
+        border: 1px solid rgba(6, 182, 212, 0.3) !important;
+        border-radius: 10px;
+    }
 
 </style>
 """, unsafe_allow_html=True)
@@ -274,10 +335,12 @@ def extraer_temperatura(condicion):
 
 def aplicar_layout_estetico(fig):
     fig.update_layout(**PLOTLY_LAYOUT)
-    fig.update_xaxes(gridcolor="rgba(255,255,255,0.1)", zerolinecolor="rgba(255,255,255,0.2)", showgrid=True)
-    fig.update_yaxes(gridcolor="rgba(255,255,255,0.1)", zerolinecolor="rgba(255,255,255,0.2)", showgrid=True)
+    # Cuadrícula neón cian sutil
+    fig.update_xaxes(gridcolor="rgba(6, 182, 212, 0.1)", zerolinecolor="rgba(6, 182, 212, 0.3)", showgrid=True)
+    fig.update_yaxes(gridcolor="rgba(6, 182, 212, 0.1)", zerolinecolor="rgba(6, 182, 212, 0.3)", showgrid=True)
+    # Puntos más grandes y brillantes con borde
     fig.update_traces(
-        marker=dict(size=10, opacity=0.85, line=dict(width=1.5, color='rgba(255,255,255,0.8)')),
+        marker=dict(size=11, opacity=0.9, line=dict(width=1.5, color='#ffffff')),
         selector=dict(mode='markers')
     )
     return fig
@@ -324,16 +387,16 @@ def cargar_y_preprocesar_datos(nombre_archivo):
 
 aceros = cargar_y_preprocesar_datos(DEFAULT_DATA_FILE)
 
-st.sidebar.header("⚙️ Diseña tu Acero")
+st.sidebar.header("⚙️ Configuración del Protocolo")
 
-modo_usuario = st.sidebar.radio("👨‍💻 ¿Cómo quieres buscar?", ["Quiero usar Niveles Simples", "Quiero Control Exacto (Experto)"])
+modo_usuario = st.sidebar.radio("👨‍💻 Modo de Operación:", ["Niveles Predefinidos (Guiado)", "Parámetros Manuales (Avanzado)"])
 
-if modo_usuario == "Quiero usar Niveles Simples":
+if modo_usuario == "Niveles Predefinidos (Guiado)":
     deshabilitar_controles = True
     
-    nivel_resistencia = st.sidebar.select_slider("💪 Fuerza Máxima:", options=["Baja", "Media", "Alta"], value="Media")
-    nivel_dureza = st.sidebar.select_slider("💎 Resistencia a rayones (Dureza):", options=["Baja", "Media", "Alta"], value="Media")
-    nivel_flexibilidad = st.sidebar.select_slider("🎗️ Capacidad de estirarse:", options=["Baja", "Media", "Alta"], value="Media")
+    nivel_resistencia = st.sidebar.select_slider("💪 Fuerza Estructural (UTS):", options=["Baja", "Media", "Alta"], value="Media")
+    nivel_dureza = st.sidebar.select_slider("💎 Resistencia al Desgaste:", options=["Baja", "Media", "Alta"], value="Media")
+    nivel_flexibilidad = st.sidebar.select_slider("🎗️ Ductilidad (Elongación):", options=["Baja", "Media", "Alta"], value="Media")
 
     mapa_uts = {"Baja": 380, "Media": 600, "Alta": 950}
     mapa_ys = {"Baja": 210, "Media": 380, "Alta": 580}
@@ -350,158 +413,254 @@ if modo_usuario == "Quiero usar Niveles Simples":
     carbono_val = np.clip(carbono_val, 0.05, 1.2)
 
     if nivel_resistencia == "Alta" or nivel_dureza == "Alta":
-        st.sidebar.warning("⚠️ **Ten en cuenta:** Si quieres que sea muy duro y resistente, será difícil de doblar y podría quebrarse con un golpe seco.")
+        st.sidebar.warning("⚠️ **Alerta Técnica:** Niveles altos de dureza/fuerza requieren alta concentración de Carbono. La ductilidad del material disminuirá significativamente.")
     elif nivel_flexibilidad == "Alta":
-        st.sidebar.success("✅ **Ten en cuenta:** Será súper fácil de moldear y soldar, pero no soportará pesos extremos.")
+        st.sidebar.success("✅ **Validación:** Excelente capacidad de moldeado y soldadura, pero menor soporte de cargas brutas.")
 
 else:
     deshabilitar_controles = False
     carbono_val, uts_val, ys_val, dureza_val, elongacion_val = 0.45, 600, 400, 180, 20
 
-carbono = st.sidebar.slider("% de Carbono (Ingrediente principal)", 0.0, 1.5, float(carbono_val), 0.01, disabled=deshabilitar_controles)
-uts = st.sidebar.slider("Fuerza para romperse - UTS (MPa)", 200, 1500, int(uts_val), disabled=deshabilitar_controles)
-ys = st.sidebar.slider("Punto de doblez - YS (MPa)", 100, 1300, int(ys_val), disabled=deshabilitar_controles)
-dureza = st.sidebar.slider("Dureza superficial (HB)", 50, 500, int(dureza_val), disabled=deshabilitar_controles)
-elongacion = st.sidebar.slider("Flexibilidad - Elongación (%)", 1, 50, int(elongacion_val), disabled=deshabilitar_controles)
+st.sidebar.markdown("---")
+carbono = st.sidebar.slider("Concentración de Carbono (%)", 0.0, 1.5, float(carbono_val), 0.01, disabled=deshabilitar_controles)
+uts = st.sidebar.slider("Resistencia Máxima (MPa)", 200, 1500, int(uts_val), disabled=deshabilitar_controles)
+ys = st.sidebar.slider("Límite Elástico - Punto de Cedencia (MPa)", 100, 1300, int(ys_val), disabled=deshabilitar_controles)
+dureza = st.sidebar.slider("Dureza Superficial (HB)", 50, 500, int(dureza_val), disabled=deshabilitar_controles)
+elongacion = st.sidebar.slider("Índice de Ductilidad - Elongación (%)", 1, 50, int(elongacion_val), disabled=deshabilitar_controles)
 
 datos_modelo_limpio = aceros.dropna(subset=COLUMNAS_MODELO + ["Condition_simple"])
 lista_originales = datos_modelo_limpio["Condition_simple"].dropna().unique().tolist()
 lista_espanol = ["Todos"] + sorted([TRADUCCIONES_TRATAMIENTOS.get(t, t) for t in lista_originales])
-tratamiento_elegido_espanol = st.sidebar.selectbox("¿Pasó por algún horno? (Tratamiento)", lista_espanol)
+tratamiento_elegido_espanol = st.sidebar.selectbox("Protocolo Térmico (Horno)", lista_espanol)
 
-buscar = st.sidebar.button("🚀 Buscar el Acero Ideal")
+buscar = st.sidebar.button("🚀 Ejecutar Algoritmo de Búsqueda")
 
 st.sidebar.markdown("---")
-with st.sidebar.expander("📖 Minidiccionario para entender todo", expanded=True):
+with st.sidebar.expander("📖 Cripto-Glosario de Materiales", expanded=False):
     st.markdown("""
     <div style="font-size: 14px; color: #ffffff; line-height: 1.6;">
-        <p><strong>💪 UTS (Fuerza Máxima):</strong> Cuánta fuerza bruta soporta antes de partirse en dos.</p>
-        <p><strong>📐 YS (Punto de Doblez):</strong> Cuánto peso aguanta antes de quedarse deformado (chueco) para siempre.</p>
-        <p><strong>💎 Dureza (HB):</strong> Qué tan difícil es rayarlo o hacerle una abolladura.</p>
-        <p><strong>🎗️ Elongación (%):</strong> Qué tanto se puede estirar como si fuera liga antes de romperse.</p>
+        <p><strong style="color:#06b6d4">💪 UTS (Fuerza Máxima):</strong> Cuánta fuerza bruta soporta antes de partirse en dos.</p>
+        <p><strong style="color:#06b6d4">📐 YS (Límite Elástico):</strong> Cuánto peso aguanta antes de quedarse deformado para siempre.</p>
+        <p><strong style="color:#06b6d4">💎 Dureza (HB):</strong> Qué tan difícil es rayarlo o abollarlo.</p>
+        <p><strong style="color:#06b6d4">🎗️ Elongación (%):</strong> Qué tanto se estira como liga antes de romperse.</p>
     </div>
     """, unsafe_allow_html=True)
 
 
 # ==========================================================
-# ESTRUCTURA DE PESTAÑAS
+# ESTRUCTURA DE PESTAÑAS (Módulos)
 # ==========================================================
 
-st.title("Descubriendo el Acero")
+st.title("SteelMatch AI // Quantum Materials Analysis")
 
 tab_inicio, tab_exploracion, tab_temp, tab_anova, tab_recomendador = st.tabs([
-    "🏠 Inicio", "📊 Jugar con la Química", "🔥 Jugar con el Horno", "⚖️ ¿Qué influye más?", "🔍 Buscador Mágico"
+    "🏠 Módulo Central", "📊 Matriz Química", "🔥 Protocolo Térmico", "⚖️ Control de Variables", "🔍 Requisitor"
 ])
 
 
-# ── TAB 1 — INICIO ──
+# ── TAB 1 — INICIO (Módulo Central) ──
 with tab_inicio:
     st.markdown("""
     <div class="intro-seccion">
-        <h4>👋 ¡Hola! Bienvenido a tu Simulador de Materiales</h4>
-        <p>Aquí vas a encontrar un espacio interactivo para entender cómo funciona el acero. No necesitas ser experto. Solo imagina que el acero es una receta de cocina: si le pones más ingredientes (como el Carbono) o si lo horneas diferente (Tratamientos Térmicos), el resultado final cambia por completo. ¡Explora las pestañas de arriba para descubrirlo!</p>
+        <h4>👋 Bienvenido al Protocolo de Simulación de Aceros SAE.</h4>
+        <p>Iniciando entorno interactivo para decodificar el comportamiento de aleaciones de acero. No se requieren conocimientos avanzados en metalurgia. Imagina que el acero es una fórmula de síntesis: si alteras los agentes químicos (como el Carbono) o modificas el protocolo de horneado (Tratamientos Térmicos), el output físico del material cambia drásticamente. ¡Usa los módulos superiores para explorar los datos!</p>
     </div>
     """, unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
-    col1.metric("Aceros Analizados", len(aceros))
-    col2.metric("Nombres Comerciales", aceros["SAE Grade"].nunique())
-    col3.metric("Tipos de Horneado", aceros["Condition_simple"].nunique())
+    col1.metric("Aceros SAE Analizados", len(aceros))
+    col2.metric("Grados Comerciales identified", aceros["SAE Grade"].nunique())
+    col3.metric("Protocolos Térmicos", aceros["Condition_simple"].nunique())
 
     st.markdown("""
     <div style="margin-top: 30px;">
-        <h3>🛠️ El Resumen: Lo que debes saber del acero</h3>
+        <h3>🛠️ Reporte Preliminar: Fundamentos Operativos</h3>
         <div class="grid-conclusion">
             <div class="card-conclusion-item">
-                <strong>🧂 El Ingrediente Estrella (Carbono):</strong>
-                <p>Si le pones más carbono, el acero se vuelve durísimo y muy fuerte. Es perfecto para hacer cuchillos o piezas que raspan contra otras cosas todo el día.</p>
+                <strong>🧂 Agente Químico Principal (Carbono):</strong>
+                <p>Al incrementar la concentración de carbono, el material incrementa su dureza y fuerza mecánica a nivel UTS. Ideal para componentes de desgaste y matrices de corte.</p>
             </div>
             <div class="card-conclusion-item">
-                <strong>🛀 Enfriarlo Lento (Recocido):</strong>
-                <p>Si lo calientas y lo dejas enfriar suaaavemente, el metal se "relaja". Se vuelve como plastilina gruesa: súper fácil de doblar, cortar y soldar.</p>
+                <strong>🛀 Protocolo de Relajación (Recocido):</strong>
+                <p>Calentamiento seguido de un enfriamiento controlado y extremadamente lento. Reduce tensiones internas y dispara la ductilidad (elongación), facilitando el mecanizado y la deformación.</p>
             </div>
             <div class="card-conclusion-item">
-                <strong>💪 Estirarlo a la Fuerza (En Frío):</strong>
-                <p>Si lo aplastas y lo estiras sin calentarlo, el metal se vuelve "tenso". Esto hace que soporte muchísimo peso sin doblarse, ideal para las vigas de un edificio.</p>
+                <strong>💪 Modificación por Tensión (En Frío):</strong>
+                <p>Deformación mecánica a temperatura ambiente. Incrementa notablemente el límite elástico (YS), permitiendo que la pieza soporte cargas mayores sin deformarse permanentemente (vigas estructurales).</p>
             </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
 
-# ── TAB 2 — EXPLORACIÓN ──
+# ── TAB 2 — EXPLORACIÓN (Matriz Química) ──
 with tab_exploracion:
     st.markdown("""
     <div class="intro-seccion">
-        <h4>📊 La Química del Acero</h4>
-        <p>En esta sección vas a encontrar cómo reacciona el acero cada vez que le agregas más Carbono. Podrás ver con tus propios ojos si se hace más fuerte, más duro, o si pierde flexibilidad.</p>
+        <h4>📊 Módulo de Análisis Químico vs Físico</h4>
+        <p>Entorno para visualizar la causalidad directa: cómo el porcentaje de Carbono en la aleación impacta el rendimiento operativo final. Observa la regresión para determinar si la propiedad se potencia o degrada al aumentar la química.</p>
     </div>
     """, unsafe_allow_html=True)
 
-    prop_c = st.selectbox("¿Qué característica quieres comparar contra el Carbono?", PROPIEDADES_MECANICAS)
+    prop_c = st.selectbox("Selecciona la propiedad física a evaluar contra el Carbono:", PROPIEDADES_MECANICAS)
     
     df_carb = aceros.dropna(subset=["%C", prop_c, "Condition_simple"]).copy()
-    df_carb["Tratamiento (Horneado)"] = df_carb["Condition_simple"].map(TRADUCCIONES_TRATAMIENTOS)
+    df_carb["Protocolo Térmico"] = df_carb["Condition_simple"].map(TRADUCCIONES_TRATAMIENTOS)
     
     st.markdown(f"""
     <div class="leyenda-grafica">
-        👀 <strong>¿Cómo se lee esto?</strong><br>
-        • Cada puntito de color es un trozo de acero real. <br>
-        • El eje de abajo nos dice cuánto Carbono tiene. El eje de lado nos dice cuánta <strong>{prop_c}</strong> logró alcanzar.<br>
-        • Si los puntitos van hacia arriba en diagonal, ¡el Carbono le ayuda! Si van hacia abajo, ¡el Carbono lo empeora!
+        👀 <strong>Guía de Interpretación de Consola:</strong><br>
+        • Cada unidad de datos (punto) es una muestra de acero SAE real.<br>
+        • El eje X representa la concentración de Carbono. El eje Y representa el output de <strong>{prop_c}</strong>.<br>
+        • Una pendiente ascendente indica correlación positiva (el carbono ayuda); descendente indica correlación negativa.
     </div>
     """, unsafe_allow_html=True)
 
+    # Gráfica Neón usando paleta qualitative (Vibrante)
     fig_c = px.scatter(
         df_carb, x="%C", y=prop_c, 
-        color="Tratamiento (Horneado)", 
+        color="Protocolo Térmico", 
         hover_data=["SAE Grade"], 
         trendline="ols",
-        color_discrete_sequence=px.colors.qualitative.Pastel
+        color_discrete_sequence=px.colors.qualitative.Alphabet # Paleta muy vibrante neón
     )
     st.plotly_chart(aplicar_layout_estetico(fig_c), use_container_width=True, theme=None)
 
 
-# ── TAB 3 — TEMPERATURA ──
+# ── TAB 3 — TEMPERATURA (Protocolo Térmico) ──
 with tab_temp:
     st.markdown("""
     <div class="intro-seccion">
-        <h4>🔥 El Efecto del Horno</h4>
-        <p>Aquí vas a encontrar qué pasa exactamente cuando subimos la temperatura del fuego. Calentar el acero hace que sus átomos se acomoden mejor y liberen estrés. ¡Mira cómo cambia su comportamiento según los grados de calor!</p>
+        <h4>🔥 Módulo de Influencia Térmica // Grados Kelvin</h4>
+        <p>Análisis del impacto de la temperatura del horno. El calor reorganiza la estructura molecular del metal para liberar estrés o cambiar sus fases cristalinas. ¡Observa cómo la temperatura dicta el balance final entre tenacidad y rigidez!</p>
     </div>
     """, unsafe_allow_html=True)
     
-    prop_t = st.selectbox("Elige la característica que quieres ver reaccionar al calor:", PROPIEDADES_MECANICAS, key="sb_p_t")
+    prop_t = st.selectbox("Output físico a evaluar reaccionando al calor:", PROPIEDADES_MECANICAS, key="sb_p_t")
     df_temp = aceros.dropna(subset=["Temp_C", prop_t, "Condition_simple"])
     
     st.markdown(f"""
     <div class="leyenda-grafica">
-        👀 <strong>¿Cómo se lee esto?</strong><br>
-        • Abajo están los grados de temperatura del horno. A los lados, el nivel de <strong>{prop_t}</strong>.<br>
-        • Los colores te dicen si tiene mucho carbono (colores vivos) o poquito (colores claros).
+        👀 <strong>Guía de Interpretación Térmica:</strong><br>
+        • Eje X: Temperatura de proceso (°C). Eje Y: Output de <strong>{prop_t}</strong>.<br>
+        • El color de la muestra indica concentración de carbono: Brillante = Alto, Oscuro = Bajo.
     </div>
     """, unsafe_allow_html=True)
 
-    st.subheader("🔵 Cuando lo dejamos enfriar lentamente (Recocido)")
+    st.subheader("🔵 Protocolo: Recocido // Enfriamiento Controlado Lento")
     df_ann = df_temp[df_temp["Condition_simple"] == "Annealed"]
     if not df_ann.empty:
-        fig_a = px.scatter(df_ann, x="Temp_C", y=prop_t, color="%C", trendline="ols", color_continuous_scale="Tealgrn")
+        # Escala neón Teal/verde para recocido
+        fig_a = px.scatter(df_ann, x="Temp_C", y=prop_t, color="%C", trendline="ols", color_continuous_scale="Viridis")
         st.plotly_chart(aplicar_layout_estetico(fig_a), use_container_width=True, theme=None)
     else:
-        st.warning("No hay suficientes datos registrados de temperatura para mostrarte esta gráfica.")
+        st.warning("ERROR: Datos insuficientes registrados para la simulación térmica de recocido.")
 
-    st.subheader("🟣 Cuando lo sacamos a enfriar al aire (Normalizado)")
+    st.subheader("🟣 Protocolo: Normalizado // Enfriamiento al Aire libre")
     df_norm = df_temp[df_temp["Condition_simple"] == "Normalized"]
     if not df_norm.empty:
-        fig_n = px.scatter(df_norm, x="Temp_C", y=prop_t, color="%C", trendline="ols", color_continuous_scale="Purp")
+        # Escala neón Púrpura para normalizado
+        fig_n = px.scatter(df_norm, x="Temp_C", y=prop_t, color="%C", trendline="ols", color_continuous_scale="Plasma")
         st.plotly_chart(aplicar_layout_estetico(fig_n), use_container_width=True, theme=None)
     else:
-        st.warning("No hay suficientes datos registrados de temperatura para mostrarte esta gráfica.")
+        st.warning("ERROR: Datos insuficientes registrados para la simulación térmica de normalizado.")
 
 
-# ── TAB 4 — ¿QUÉ INFLUYE MÁS? (NUEVO ANOVA) ──
+# ── TAB 4 — ¿QUÉ INFLUYE MÁS? (Control de Variables // ANOVA Redesigned) ──
 with tab_anova:
     st.markdown("""
     <div class="intro-seccion">
-        <h4>⚖️ ¿Quién es el verdadero culpable?</h4>
-        <p>En esta sección vas a encontrar la respuesta a un gran misterio: Si una característica del metal cambia mucho... ¿Fue por culpa de los ingredientes (Carbono) o por culpa de cómo lo horneamos (Tratamiento
+        <h4>⚖️ Algoritmo de Atribución de Variables // Juicio ANOVA</h4>
+        <p>Resolución del dilema técnico: Cuando una propiedad física fluctúa... ¿Cuál es el factor determinante? El algoritmo ejecuta un análisis estadístico para atribuir qué porcentaje del impacto es culpa de la química (% Carbono) y cuánto es responsabilidad del protocolo del horno (Tratamiento). El output se presenta en una interfaz visual de control.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    prop_anova = st.selectbox("Selecciona la propiedad física para ejecutar el algoritmo de control:", PROPIEDADES_MECANICAS, key="sb_p_a")
+    
+    df_anova = aceros.dropna(subset=["%C", "Condition_simple", prop_anova]).copy()
+    if len(df_anova) > 10:
+        df_anova = df_anova.rename(columns={"%C": "Carbono", prop_anova: "Propiedad", "Condition_simple": "Tratamiento"})
+        mod = ols("Propiedad ~ Carbono + C(Tratamiento)", data=df_anova).fit()
+        tab_a = sm.stats.anova_lm(mod, typ=2)
+        tab_a["Influencia_%"] = (tab_a["sum_sq"] / tab_a["sum_sq"].sum()) * 100
+        
+        pct_carbono = tab_a.loc["Carbono", "Influencia_%"]
+        pct_tratamiento = tab_a.loc["C(Tratamiento)", "Influencia_%"]
+        pct_otros = tab_a.loc["Residual", "Influencia_%"]
+        
+        st.subheader(f"Vector de Control de Atribución para: {prop_anova}")
+        
+        # Gráfica de anillo (Donut) con colores neón de alto contraste
+        fig_pie = go.Figure(data=[go.Pie(
+            labels=["Factor 1: Química<br>(% Carbono)", "Factor 2: Protocolo<br>(Tratamiento Térmico)", "Factor 3: Residual<br>(Variabilidad/Misterios)"],
+            values=[pct_carbono, pct_tratamiento, pct_otros],
+            hole=.6,
+            marker_colors=["#06b6d4", "#a78bfa", "#334155"], # Cian Neón, Violeta neón, Gris oscuro
+            textinfo='label+percent',
+            textfont_size=16,
+            hoverinfo='label+percent'
+        )])
+        
+        fig_pie.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#ffffff", family="Inter", size=14),
+            showlegend=False,
+            margin=dict(t=20, b=20, l=20, r=20)
+        )
+        
+        st.plotly_chart(fig_pie, use_container_width=True, theme=None)
+
+        st.markdown("<div class='interpretacion-box'>", unsafe_allow_html=True)
+        st.markdown("### 🧠 Veredicto del Algoritmo de Control")
+        if pct_carbono > pct_tratamiento:
+            st.markdown(f"¡Resulta que **la Matriz Química es determinante**! Para modificar el/la **{prop_anova}** del metal, el porcentaje de Carbono es el factor más poderoso (representa el **{pct_carbono:.1f}%** de la atribución de control). No desgastes recursos alterando el protocolo del horno, ¡revisita la fórmula química!")
+        else:
+            st.markdown(f"¡Resulta que **el Protocolo Térmico es determinante**! Para modificar el/la **{prop_anova}**, la concentración química no es relevante. Lo que realmente altera el output físico (con un **{pct_tratamiento:.1f}%** de atribución) es si aplicas enfriamiento lento, rápido o deformación en frío. ¡Ajusta los parámetros de horneado!")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+
+# ── TAB 5 — RECOMENDADOR INTELIGENTE (Requisitor SAE) ──
+with tab_recomendador:
+    st.markdown("""
+    <div class="intro-seccion">
+        <h4>🔍 Requisitor Mágico de Muestras SAE // Matching Artificial</h4>
+        <p>Iniciando protocolo de matching. El sistema cruza tus requisitos operativos definidos en el menú de control izquierdo contra la base de datos de muestras reales para encontrar el grado comercial de acero exacto que cumple tus especificaciones técnicas.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if not datos_modelo_limpio.empty:
+        scaler = MinMaxScaler()
+        scaler.fit(datos_modelo_limpio[COLUMNAS_MODELO])
+
+        if buscar:
+            df_res = datos_modelo_limpio.copy()
+            if tratamiento_elegido_espanol != "Todos":
+                tag_or = TRADUCCIONES_INVERSAS.get(tratamiento_elegido_espanol, "Other")
+                df_res = df_res[df_res["Condition_simple"] == tag_or]
+
+            if df_res.empty:
+                st.warning("matching FAILED. No se encontraron muestras que coincidan con el protocolo térmico especificado. Reajusta los parámetros operativos.")
+            else:
+                usr_in = np.array([[carbono, uts, ys, dureza, elongacion]])
+                usr_norm = scaler.transform(usr_in)
+                mat_norm = scaler.transform(df_res[COLUMNAS_MODELO])
+
+                dist = euclidean_distances(usr_norm, mat_norm)
+                idx = np.argmin(dist)
+                match_mat = df_res.iloc[idx]
+                pct_sim = 100 / (1 + dist[0][idx])
+
+                st.success("🎉 matching SUCCESSFUL. Grado SAE óptimo localizado.")
+                
+                st.subheader("🏆 Especificación SAE Recomendada:")
+                c1, c2, c3 = st.columns(3)
+                with c1:
+                    st.metric("Grado Comercial Identificado:", f"SAE {match_mat['SAE Grade']}")
+                    st.metric("Debe venir con Protocolo Térmico:", TRADUCCIONES_TRATAMIENTOS.get(match_mat['Condition_simple'], match_mat['Condition_simple']))
+                with c2:
+                    st.metric("Nivel de Compatibilidad:", f"{pct_sim:.1f}%")
+                    st.metric("Agente Químico Real (%C):", f"{match_mat['%C']:.3f} %")
+                with c3:
+                    st.metric("Output UTS Real:", f"{match_mat['UTS (MPa)']} MPa")
+                    st.metric("Output Dureza Real (HB):", f"{match_mat['Hardness (HB)']} HB")
