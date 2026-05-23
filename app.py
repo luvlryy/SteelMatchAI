@@ -163,7 +163,7 @@ st.markdown("""
         font-weight: 600 !important;
     }
 
-    /* Selectores y campos de entrada: Futuristic Console look */
+    /* Selectores y campos de entrada en reposo (Caja visible) */
     div[data-baseweb="select"] > div, .stNumberInput input, .stSlider > div {
         background-color: rgba(15, 23, 42, 0.9) !important; 
         border: 1px solid #06b6d4 !important; 
@@ -171,27 +171,45 @@ st.markdown("""
         box-shadow: 0 0 5px rgba(6, 182, 212, 0.2);
     }
     
-    div[data-baseweb="select"] * {
+    /* Letra dentro del selector CERRADO */
+    div[data-baseweb="select"] > div * {
         color: #ffffff !important; 
         font-weight: 600;
     }
 
-    /* ── CORRECCIÓN DEL MENÚ DESPLEGABLE (POPOVER) ── */
-    div[data-baseweb="popover"] > div, ul[role="listbox"], div[role="listbox"] {
-        background-color: #020617 !important;
-        border: 1px solid #06b6d4 !important;
+    /* ── CORRECCIÓN BLINDADA DEL MENÚ DESPLEGABLE (LISTA ABIERTA) ── */
+    /* Forzamos fondo claro/blanco y letras NEGRAS para máxima visibilidad */
+    div[data-baseweb="popover"] div[role="listbox"],
+    div[data-baseweb="popover"] ul[role="listbox"] {
+        background-color: #f8fafc !important; /* Fondo gris muy claro/blanco */
+        border: 2px solid #06b6d4 !important;
         border-radius: 8px;
-        box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3) !important;
+        box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4) !important;
     }
-    li[role="option"] {
+    
+    div[data-baseweb="popover"] li[role="option"] {
         background-color: transparent !important;
-        color: #ffffff !important;
-        font-weight: 600 !important;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
     }
-    li[role="option"]:hover, li[role="option"][aria-selected="true"] {
-        background-color: rgba(6, 182, 212, 0.3) !important;
-        color: #06b6d4 !important;
+
+    /* Texto NEGRO para todas las opciones no seleccionadas */
+    div[data-baseweb="popover"] li[role="option"] * {
+        color: #000000 !important; 
+        font-weight: 700 !important;
     }
+
+    /* Efecto Hover: Cuando seleccionas o pasas el ratón, el fondo se vuelve cian y la letra blanca */
+    div[data-baseweb="popover"] li[role="option"]:hover,
+    div[data-baseweb="popover"] li[role="option"][aria-selected="true"] {
+        background-color: #06b6d4 !important;
+    }
+    
+    div[data-baseweb="popover"] li[role="option"]:hover *,
+    div[data-baseweb="popover"] li[role="option"][aria-selected="true"] * {
+        color: #ffffff !important; /* Letra blanca al resaltar */
+    }
+
 
     /* Estilo del botón principal - Neon Cyberpunk */
     .stButton>button {
@@ -229,9 +247,6 @@ st.markdown("""
         margin-top: 0 !important;
         color: #34d399 !important; /* Verde menta brillante */
         margin-bottom: 10px !important;
-    }
-    .intro-seccion p {
-        color: #ffffff !important;
     }
 
     /* Caja de leyenda de gráficas */
@@ -453,7 +468,7 @@ tratamiento_elegido_espanol = st.sidebar.selectbox("Protocolo Térmico (Horno)",
 buscar = st.sidebar.button("🚀 Ejecutar Algoritmo de Búsqueda")
 
 st.sidebar.markdown("---")
-with st.sidebar.expander("📖 Cripto-Glosario de Materiales", expanded=False):
+with st.sidebar.expander("📖 GLOSARIO", expanded=False):
     st.markdown("""
     <div style="font-size: 14px; color: #ffffff; line-height: 1.6;">
         <p><strong style="color:#06b6d4">💪 UTS (Fuerza Máxima):</strong> Cuánta fuerza bruta soporta antes de partirse en dos.</p>
@@ -468,7 +483,7 @@ with st.sidebar.expander("📖 Cripto-Glosario de Materiales", expanded=False):
 # ESTRUCTURA DE PESTAÑAS (Módulos)
 # ==========================================================
 
-st.title("SteelMatch AI // Quantum Materials Analysis")
+st.title("SteelMatch AI // Conoce todo sobre las características de los aceros")
 
 tab_inicio, tab_exploracion, tab_temp, tab_anova, tab_recomendador = st.tabs([
     "🏠 Módulo Central", "📊 Matriz Química", "🔥 Protocolo Térmico", "⚖️ Control de Variables", "🔍 Requisitor"
