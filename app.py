@@ -392,7 +392,7 @@ def cargar_y_preprocesar_datos(nombre_archivo):
 
 aceros = cargar_y_preprocesar_datos(DEFAULT_DATA_FILE)
 
-st.sidebar.header("⚙️ ¡Busca tu material según las características deseadas"")
+st.sidebar.header("⚙️ ¡Busca tu material según las características deseadas")
 
 modo_usuario = st.sidebar.radio("👨‍💻 Modo de Operación:", ["Niveles Predefinidos (Guiado)", "Parámetros Manuales (Avanzado)"])
 
