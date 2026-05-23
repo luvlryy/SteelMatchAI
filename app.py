@@ -392,7 +392,7 @@ def cargar_y_preprocesar_datos(nombre_archivo):
 
 aceros = cargar_y_preprocesar_datos(DEFAULT_DATA_FILE)
 
-st.sidebar.header("⚙️ Configuración del Protocolo")
+st.sidebar.header("⚙️ ¡Busca tu material según las características deseadas"")
 
 modo_usuario = st.sidebar.radio("👨‍💻 Modo de Operación:", ["Niveles Predefinidos (Guiado)", "Parámetros Manuales (Avanzado)"])
 
@@ -441,7 +441,7 @@ tratamiento_elegido_espanol = st.sidebar.selectbox("Protocolo Térmico (Horno)",
 buscar = st.sidebar.button("🚀 Ejecutar Algoritmo de Búsqueda")
 
 st.sidebar.markdown("---")
-with st.sidebar.expander("📖 Cripto-Glosario de Materiales", expanded=False):
+with st.sidebar.expander("📖 Glosario de Materiales", expanded=False):
     st.markdown("""
     <div style="font-size: 14px; color: #ffffff; line-height: 1.6;">
         <p><strong style="color:#06b6d4">💪 UTS (Fuerza Máxima):</strong> Cuánta fuerza bruta soporta antes de partirse en dos.</p>
@@ -456,7 +456,7 @@ with st.sidebar.expander("📖 Cripto-Glosario de Materiales", expanded=False):
 # ESTRUCTURA DE PESTAÑAS (Módulos)
 # ==========================================================
 
-st.title("SteelMatch AI // Quantum Materials Analysis")
+st.title("SteelMatch AI // Conoce todo acerca de los aceros")
 
 tab_inicio, tab_exploracion, tab_temp, tab_anova, tab_recomendador = st.tabs([
     "🏠 Módulo Central", "📊 Matriz Química", "🔥 Protocolo Térmico", "⚖️ Control de Variables", "🔍 Requisitor"
