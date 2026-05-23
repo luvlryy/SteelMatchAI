@@ -1,28 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-==============================================================
-PROYECTO INTEGRADOR — STEELMATCH AI
-VERSIÓN COMPLETA FINAL + MEJORAS DEL PROYECTO
-==============================================================
-
-MEJORAS INCLUIDAS:
-✔ Tablas de aceros y tratamientos
-✔ Descripciones de tratamientos
-✔ Verificación del dataset
-✔ Gráfica combinada de propiedades
-✔ Boxplots por tratamiento
-✔ Interpretaciones automáticas
-✔ Explicación de líneas verticales
-✔ Comentarios técnicos completos
-✔ ANOVA
-✔ Recomendador inteligente
-✔ Interfaz futurista avanzada
-==============================================================
+Proyecto Integrador Materiales — SteelMatch AI
+VERSIÓN FINAL COMPLETA
+Mantiene interfaz futurista original + mejoras requeridas
 """
-
-# ==========================================================
-# IMPORTACIÓN DE LIBRERÍAS
-# ==========================================================
 
 import re
 import warnings
@@ -38,11 +19,11 @@ from sklearn.metrics.pairwise import euclidean_distances
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
 
-warnings.filterwarnings("ignore")
-
 # ==========================================================
 # CONFIGURACIÓN GENERAL
 # ==========================================================
+
+warnings.filterwarnings("ignore", category=UserWarning)
 
 DEFAULT_DATA_FILE = "Data/steel_carbon_data.xlsx"
 
@@ -62,73 +43,48 @@ COLUMNAS_MODELO = [
 ]
 
 # ==========================================================
-# CONFIGURACIÓN VISUAL
+# CONFIGURACIÓN DE PÁGINA
 # ==========================================================
 
 st.set_page_config(
-    page_title="SteelMatch AI",
+    page_title="SteelMatch AI | Quantum Materials",
     page_icon="⚙️",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # ==========================================================
-# ESTILO FUTURISTA
-# ==========================================================
-
-st.markdown("""
-<style>
-
-.stApp {
-    background-color: #020617;
-    color: white;
-}
-
-h1, h2, h3 {
-    color: #06b6d4 !important;
-}
-
-[data-testid="stSidebar"] {
-    background-color: #0f172a;
-}
-
-.stButton button {
-    background: linear-gradient(90deg, #06b6d4, #3b82f6);
-    color: white;
-    border-radius: 10px;
-    font-weight: bold;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-# ==========================================================
-# DICCIONARIOS
+# TRADUCCIONES
 # ==========================================================
 
 TRADUCCIONES_TRATAMIENTOS = {
-    "Annealed": "Recocido",
-    "Normalized": "Normalizado",
-    "Hot Rolled": "Laminado en caliente",
-    "Cold Drawn": "Estirado en frío",
-    "Quenched": "Templado",
+    "Annealed": "Recocido (Enfriado Lento)",
+    "Normalized": "Normalizado (Enfriado al Aire)",
+    "Hot Rolled": "Laminado en Caliente",
+    "Cold Drawn": "Estirado en Frío",
+    "Quenched": "Templado (Enfriado Rápido)",
     "Tempered": "Revenido",
     "As Rolled": "Laminado",
     "Other": "Otros"
 }
 
-DESCRIPCIONES = {
-    "Annealed": "Calentamiento y enfriamiento lento para aumentar ductilidad.",
-    "Normalized": "Enfriamiento al aire para mejorar uniformidad.",
-    "Hot Rolled": "Procesado en caliente para facilitar deformación.",
-    "Cold Drawn": "Deformación en frío para aumentar resistencia.",
-    "Quenched": "Enfriamiento rápido para incrementar dureza.",
-    "Tempered": "Recalentamiento posterior al temple.",
-    "As Rolled": "Estado original del laminado.",
-    "Other": "Otros tratamientos."
-}
-
 TRADUCCIONES_INVERSAS = {
     v: k for k, v in TRADUCCIONES_TRATAMIENTOS.items()
+}
+
+# ==========================================================
+# DESCRIPCIONES DE TRATAMIENTOS
+# ==========================================================
+
+DESCRIPCIONES_TRATAMIENTOS = {
+    "Annealed": "Calentamiento y enfriamiento lento para aumentar ductilidad.",
+    "Normalized": "Enfriamiento al aire para mejorar uniformidad mecánica.",
+    "Hot Rolled": "Laminado en caliente para facilitar deformación.",
+    "Cold Drawn": "Deformación en frío para incrementar resistencia.",
+    "Quenched": "Enfriamiento rápido para aumentar dureza.",
+    "Tempered": "Recalentamiento después del temple para reducir fragilidad.",
+    "As Rolled": "Estado original después del laminado.",
+    "Other": "Tratamientos diversos."
 }
 
 # ==========================================================
@@ -139,30 +95,75 @@ PLOTLY_LAYOUT = dict(
     template="plotly_dark",
     paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="rgba(15,23,42,0.4)",
-    font=dict(color="white"),
+    font=dict(color="#ffffff", family="sans-serif", size=14),
+    title_font=dict(color="#06b6d4", size=20),
+    margin=dict(t=60, b=40, l=40, r=40)
 )
 
 # ==========================================================
+# CSS ORIGINAL COMPLETO
+# ==========================================================
+
+st.markdown("""
+<style>
+
+.stApp, [data-testid="stSidebar"] {
+    background-color: #020617 !important;
+}
+
+html, body, [class*="css"], p, span, label, li {
+    color: #ffffff !important;
+}
+
+h1 {
+    color: #06b6d4 !important;
+    font-size: 3rem !important;
+}
+
+h2 {
+    color: #06b6d4 !important;
+}
+
+.stButton>button {
+    background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+    color: white;
+    border-radius: 10px;
+    font-weight: bold;
+    border: none;
+}
+
+.stButton>button:hover {
+    box-shadow: 0 0 15px #06b6d4;
+}
+
+.intro-seccion {
+    background: rgba(15, 23, 42, 0.6);
+    border: 2px solid #06b6d4;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.leyenda-grafica {
+    background: rgba(2, 6, 23, 0.8);
+    border-left: 5px solid #34d399;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.interpretacion-box {
+    background: rgba(2, 6, 23, 0.8);
+    border: 2px solid #34d399;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# ==========================================================
 # FUNCIONES
-# ==========================================================
-
-def aplicar_layout_estetico(fig):
-
-    fig.update_layout(**PLOTLY_LAYOUT)
-
-    fig.update_xaxes(
-        gridcolor="rgba(255,255,255,0.1)"
-    )
-
-    fig.update_yaxes(
-        gridcolor="rgba(255,255,255,0.1)"
-    )
-
-    return fig
-
-
-# ==========================================================
-# AGRUPAR TRATAMIENTOS
 # ==========================================================
 
 def agrupar_tratamiento(texto):
@@ -194,15 +195,14 @@ def agrupar_tratamiento(texto):
         return "Other"
 
 
-# ==========================================================
-# EXTRAER TEMPERATURA
-# ==========================================================
-
 def extraer_temperatura(condicion):
 
     condicion = str(condicion)
 
-    coincidencia = re.search(r"(\d+(?:\.\d+)?)\s*°\s*[Cc]", condicion)
+    coincidencia = re.search(
+        r"(\d+(?:\.\d+)?)\s*°\s*[Cc]",
+        condicion
+    )
 
     if coincidencia:
         return float(coincidencia.group(1))
@@ -210,8 +210,22 @@ def extraer_temperatura(condicion):
     return np.nan
 
 
+def aplicar_layout_estetico(fig):
+
+    fig.update_layout(**PLOTLY_LAYOUT)
+
+    fig.update_xaxes(
+        gridcolor="rgba(6, 182, 212, 0.1)"
+    )
+
+    fig.update_yaxes(
+        gridcolor="rgba(6, 182, 212, 0.1)"
+    )
+
+    return fig
+
 # ==========================================================
-# CARGAR Y PREPROCESAR DATOS
+# CARGA Y PREPROCESAMIENTO
 # ==========================================================
 
 @st.cache_data
@@ -221,10 +235,6 @@ def cargar_y_preprocesar_datos(nombre_archivo):
 
     aceros.columns = aceros.columns.astype(str).str.strip()
 
-    # ======================================================
-    # LIMPIEZA DE COLUMNAS
-    # ======================================================
-
     aceros["SAE Grade"] = aceros["SAE Grade"].astype(str)
 
     aceros["Conditions"] = (
@@ -233,10 +243,6 @@ def cargar_y_preprocesar_datos(nombre_archivo):
         .str.strip()
         .str.replace(r"\s+", " ", regex=True)
     )
-
-    # ======================================================
-    # CÁLCULO DEL %C
-    # ======================================================
 
     aceros["C (Min)"] = pd.to_numeric(
         aceros["C (Min)"],
@@ -253,10 +259,6 @@ def cargar_y_preprocesar_datos(nombre_archivo):
         aceros["C (Max)"]
     ) / 2
 
-    # ======================================================
-    # CONVERSIÓN NUMÉRICA
-    # ======================================================
-
     for col in PROPIEDADES_MECANICAS:
 
         aceros[col] = pd.to_numeric(
@@ -264,24 +266,15 @@ def cargar_y_preprocesar_datos(nombre_archivo):
             errors="coerce"
         )
 
-    # ======================================================
-    # AGRUPAR TRATAMIENTOS
-    # ======================================================
-
     aceros["Condition_simple"] = aceros[
         "Conditions"
     ].apply(agrupar_tratamiento)
-
-    # ======================================================
-    # EXTRAER TEMPERATURA
-    # ======================================================
 
     aceros["Temp_C"] = aceros[
         "Conditions"
     ].apply(extraer_temperatura)
 
     return aceros
-
 
 # ==========================================================
 # CARGA DE DATOS
@@ -290,55 +283,58 @@ def cargar_y_preprocesar_datos(nombre_archivo):
 aceros = cargar_y_preprocesar_datos(DEFAULT_DATA_FILE)
 
 # ==========================================================
-# SIDEBAR
+# SIDEBAR ORIGINAL
 # ==========================================================
 
-st.sidebar.header("⚙️ Configuración")
+st.sidebar.header("⚙️ Configuración del Protocolo")
 
 carbono = st.sidebar.slider(
-    "Carbono %",
+    "Concentración de Carbono (%)",
     0.0,
     1.5,
-    0.45
+    0.45,
+    0.01
 )
 
 uts = st.sidebar.slider(
-    "UTS",
+    "Resistencia Máxima (MPa)",
     200,
     1500,
     600
 )
 
 ys = st.sidebar.slider(
-    "YS",
+    "Límite Elástico (MPa)",
     100,
     1300,
     400
 )
 
 dureza = st.sidebar.slider(
-    "Dureza",
+    "Dureza (HB)",
     50,
     500,
     180
 )
 
 elongacion = st.sidebar.slider(
-    "Elongación",
+    "Elongación (%)",
     1,
     50,
     20
 )
 
 buscar = st.sidebar.button(
-    "Buscar acero"
+    "🚀 Ejecutar Algoritmo"
 )
 
 # ==========================================================
 # TÍTULO
 # ==========================================================
 
-st.title("⚙️ SteelMatch AI")
+st.title(
+    "SteelMatch AI // Características de los Aceros"
+)
 
 # ==========================================================
 # TABS
@@ -346,11 +342,11 @@ st.title("⚙️ SteelMatch AI")
 
 tab_dataset, tab_inicio, tab_exploracion, tab_temp, tab_anova, tab_recomendador = st.tabs([
     "🧾 Dataset",
-    "🏠 Inicio",
-    "📊 Exploración",
-    "🔥 Temperatura",
-    "⚖️ ANOVA",
-    "🔍 Recomendador"
+    "🏠 Módulo Central",
+    "📊 Matriz Química",
+    "🔥 Protocolo Térmico",
+    "⚖️ Control Variables",
+    "🔍 Requisitor"
 ])
 
 # ==========================================================
@@ -359,21 +355,18 @@ tab_dataset, tab_inicio, tab_exploracion, tab_temp, tab_anova, tab_recomendador 
 
 with tab_dataset:
 
-    st.header("📂 Exploración del Dataset")
+    st.markdown("""
+    <div class="intro-seccion">
+        <h4>📂 Exploración General del Dataset</h4>
+        <p>Verificación del dataset, tipos de aceros y tratamientos térmicos.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # ======================================================
-    # HEAD DEL DATASET
-    # ======================================================
-
-    st.subheader("Primeras filas")
+    st.subheader("Primeras filas del dataset")
 
     st.dataframe(aceros.head())
 
-    # ======================================================
-    # NOMBRES DE COLUMNAS
-    # ======================================================
-
-    st.subheader("Columnas")
+    st.subheader("Nombres de columnas")
 
     st.write(aceros.columns.tolist())
 
@@ -390,13 +383,16 @@ with tab_dataset:
         .sort_values("Número de registros", ascending=False)
     )
 
-    st.dataframe(tabla_aceros)
+    st.dataframe(
+        tabla_aceros,
+        use_container_width=True
+    )
 
     # ======================================================
     # TABLA DE TRATAMIENTOS
     # ======================================================
 
-    st.subheader("🔥 Tratamientos")
+    st.subheader("🔥 Lista de Tratamientos")
 
     tabla_trat = (
         aceros.groupby("Condition_simple")
@@ -406,9 +402,12 @@ with tab_dataset:
 
     tabla_trat["Descripción"] = tabla_trat[
         "Condition_simple"
-    ].map(DESCRIPCIONES)
+    ].map(DESCRIPCIONES_TRATAMIENTOS)
 
-    st.dataframe(tabla_trat)
+    st.dataframe(
+        tabla_trat,
+        use_container_width=True
+    )
 
 # ==========================================================
 # TAB INICIO
@@ -416,21 +415,21 @@ with tab_dataset:
 
 with tab_inicio:
 
-    st.header("🏠 Introducción")
-
     st.markdown("""
-    Este proyecto analiza cómo:
-    
-    - el porcentaje de carbono
-    - el tratamiento térmico
-    
-    afectan las propiedades mecánicas de los aceros.
-    """)
+    <div class="intro-seccion">
+        <h4>👋 Bienvenido a SteelMatch AI</h4>
+        <p>
+        Plataforma interactiva para analizar cómo el carbono
+        y los tratamientos térmicos modifican las propiedades
+        mecánicas de los aceros SAE.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
 
     c1.metric(
-        "Registros",
+        "Aceros Analizados",
         len(aceros)
     )
 
@@ -450,14 +449,22 @@ with tab_inicio:
 
 with tab_exploracion:
 
-    st.header("📊 Propiedades vs Carbono")
+    st.markdown("""
+    <div class="intro-seccion">
+        <h4>📊 Relación entre Carbono y Propiedades</h4>
+        <p>
+        Análisis de cómo cambia el comportamiento mecánico
+        del acero conforme aumenta el contenido de carbono.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # ======================================================
-    # GRÁFICA COMBINADA
+    # NUEVA GRÁFICA COMPLETA
     # ======================================================
 
     st.subheader(
-        "📈 Todas las Propiedades Mecánicas"
+        "📈 Todas las Propiedades Mecánicas vs % Carbono"
     )
 
     df_multi = aceros.dropna(
@@ -488,51 +495,62 @@ with tab_exploracion:
 
     st.plotly_chart(
         aplicar_layout_estetico(fig_all),
-        use_container_width=True
+        use_container_width=True,
+        theme=None
     )
 
     # ======================================================
-    # INTERPRETACIÓN
+    # RESPUESTAS AUTOMÁTICAS
     # ======================================================
 
     st.markdown("""
-    ### 🧠 Interpretación
+    <div class="interpretacion-box">
+    <h3>🧠 Interpretación Automática</h3>
 
-    - UTS aumenta con el carbono.
-    - YS aumenta con el carbono.
-    - La dureza aumenta con el carbono.
-    - La elongación disminuye.
+    <p>
+    • El UTS y el YS aumentan al incrementar el porcentaje de carbono.<br><br>
 
-    El acero se vuelve:
-    - más resistente
-    - más duro
-    - menos dúctil
-    """)
+    • La dureza también aumenta debido a la mayor presencia
+    de cementita en la microestructura.<br><br>
+
+    • La elongación disminuye porque el material se vuelve
+    más frágil y menos dúctil.<br><br>
+
+    • Existe una tendencia aproximadamente lineal entre
+    carbono y resistencia mecánica.<br><br>
+
+    • El aumento simultáneo de UTS y YS implica un acero
+    más resistente a deformaciones y fractura.
+    </p>
+
+    </div>
+    """, unsafe_allow_html=True)
 
     # ======================================================
-    # PROPIEDAD INDIVIDUAL
+    # GRÁFICA INDIVIDUAL ORIGINAL
     # ======================================================
 
-    prop = st.selectbox(
-        "Selecciona propiedad",
+    prop_c = st.selectbox(
+        "Selecciona propiedad:",
         PROPIEDADES_MECANICAS
     )
 
-    fig = px.scatter(
-        aceros.dropna(subset=["%C", prop]),
+    fig_c = px.scatter(
+        aceros.dropna(subset=["%C", prop_c]),
         x="%C",
-        y=prop,
+        y=prop_c,
         color="Condition_simple",
         trendline="ols"
     )
 
     st.plotly_chart(
-        aplicar_layout_estetico(fig),
-        use_container_width=True
+        aplicar_layout_estetico(fig_c),
+        use_container_width=True,
+        theme=None
     )
 
     # ======================================================
-    # BOXPLOT
+    # NUEVO BOXPLOT
     # ======================================================
 
     st.subheader(
@@ -540,25 +558,37 @@ with tab_exploracion:
     )
 
     fig_box = px.box(
-        aceros.dropna(subset=[prop]),
+        aceros.dropna(subset=[prop_c]),
         x="Condition_simple",
-        y=prop,
+        y=prop_c,
         color="Condition_simple"
     )
 
     st.plotly_chart(
         aplicar_layout_estetico(fig_box),
-        use_container_width=True
+        use_container_width=True,
+        theme=None
     )
 
     st.markdown("""
-    ### 📘 Interpretación del Boxplot
+    <div class="interpretacion-box">
+    <h3>📘 Interpretación del Boxplot</h3>
 
-    - Temple → mayor dureza.
-    - Recocido → mayor ductilidad.
-    - Cajas altas → mayor variabilidad.
-    - Outliers → valores atípicos.
-    """)
+    <p>
+    • Los tratamientos templados presentan
+    mayores valores de dureza y resistencia.<br><br>
+
+    • Los recocidos muestran mayor elongación
+    y menor dureza.<br><br>
+
+    • Una caja más alta indica mayor variabilidad
+    del proceso.<br><br>
+
+    • Los puntos aislados representan outliers.
+    </p>
+
+    </div>
+    """, unsafe_allow_html=True)
 
 # ==========================================================
 # TAB TEMPERATURA
@@ -566,79 +596,97 @@ with tab_exploracion:
 
 with tab_temp:
 
-    st.header("🔥 Influencia de Temperatura")
+    st.markdown("""
+    <div class="intro-seccion">
+        <h4>🔥 Influencia de Temperatura</h4>
+        <p>
+        Relación entre temperatura de tratamiento
+        y propiedades mecánicas.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    prop_temp = st.selectbox(
-        "Propiedad",
+    prop_t = st.selectbox(
+        "Propiedad:",
         PROPIEDADES_MECANICAS,
-        key="temp"
+        key="temp_prop"
     )
 
     df_temp = aceros.dropna(
-        subset=["Temp_C", prop_temp]
+        subset=["Temp_C", prop_t]
     )
 
     # ======================================================
     # ANNEALED
     # ======================================================
 
-    st.subheader("Annealed")
+    st.subheader("🔵 Annealed")
 
     df_ann = df_temp[
         df_temp["Condition_simple"] == "Annealed"
     ]
 
-    fig_ann = px.scatter(
+    fig_a = px.scatter(
         df_ann,
         x="Temp_C",
-        y=prop_temp,
+        y=prop_t,
         color="%C",
         trendline="ols"
     )
 
     st.plotly_chart(
-        aplicar_layout_estetico(fig_ann),
-        use_container_width=True
+        aplicar_layout_estetico(fig_a),
+        use_container_width=True,
+        theme=None
     )
 
     # ======================================================
     # NORMALIZED
     # ======================================================
 
-    st.subheader("Normalized")
+    st.subheader("🟣 Normalized")
 
     df_norm = df_temp[
         df_temp["Condition_simple"] == "Normalized"
     ]
 
-    fig_norm = px.scatter(
+    fig_n = px.scatter(
         df_norm,
         x="Temp_C",
-        y=prop_temp,
+        y=prop_t,
         color="%C",
         trendline="ols"
     )
 
     st.plotly_chart(
-        aplicar_layout_estetico(fig_norm),
-        use_container_width=True
+        aplicar_layout_estetico(fig_n),
+        use_container_width=True,
+        theme=None
     )
 
     # ======================================================
-    # EXPLICACIÓN
+    # EXPLICACIÓN NUEVA
     # ======================================================
 
     st.markdown("""
-    ### 🧠 Explicación de líneas verticales
+    <div class="interpretacion-box">
+    <h3>🧠 Explicación de Líneas Verticales</h3>
 
-    Varias muestras fueron tratadas
-    exactamente a la misma temperatura,
-    pero tienen composiciones químicas distintas.
+    <p>
+    Las líneas verticales aparecen porque varios aceros
+    fueron tratados exactamente a la misma temperatura,
+    pero poseen diferentes composiciones químicas (%C).<br><br>
 
-    Por eso aparecen líneas verticales:
-    - misma temperatura
-    - diferentes propiedades
-    """)
+    Esto demuestra que:
+    <br><br>
+
+    • La temperatura NO es el único factor importante.<br>
+    • El contenido de carbono también modifica
+    las propiedades mecánicas.
+    </p>
+
+    </div>
+    """, unsafe_allow_html=True)
 
 # ==========================================================
 # TAB ANOVA
@@ -646,12 +694,20 @@ with tab_temp:
 
 with tab_anova:
 
-    st.header("⚖️ Influencia Estadística")
+    st.markdown("""
+    <div class="intro-seccion">
+        <h4>⚖️ Influencia Estadística (ANOVA)</h4>
+        <p>
+        Comparación entre influencia del carbono
+        y tratamiento térmico.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
     prop_anova = st.selectbox(
-        "Propiedad para ANOVA",
+        "Propiedad:",
         PROPIEDADES_MECANICAS,
-        key="anova"
+        key="anova_prop"
     )
 
     df_anova = aceros.dropna(
@@ -681,49 +737,16 @@ with tab_anova:
 
     st.dataframe(tabla)
 
-    pct_carbono = tabla.loc[
-        "Carbono",
-        "Influencia_%"
-    ]
+    fig_pie = go.Figure(data=[go.Pie(
+        labels=["Carbono", "Tratamiento", "Residual"],
+        values=tabla["Influencia_%"],
+        hole=0.5
+    )])
 
-    pct_trat = tabla.loc[
-        "C(Tratamiento)",
-        "Influencia_%"
-    ]
-
-    fig_pie = go.Figure(
-        data=[go.Pie(
-            labels=[
-                "Carbono",
-                "Tratamiento",
-                "Residual"
-            ],
-            values=[
-                pct_carbono,
-                pct_trat,
-                tabla.loc["Residual", "Influencia_%"]
-            ],
-            hole=0.5
-        )]
+    st.plotly_chart(
+        fig_pie,
+        use_container_width=True
     )
-
-    st.plotly_chart(fig_pie)
-
-    # ======================================================
-    # INTERPRETACIÓN
-    # ======================================================
-
-    if pct_carbono > pct_trat:
-
-        st.success(
-            "El carbono influye más."
-        )
-
-    else:
-
-        st.success(
-            "El tratamiento influye más."
-        )
 
 # ==========================================================
 # TAB RECOMENDADOR
@@ -731,7 +754,15 @@ with tab_anova:
 
 with tab_recomendador:
 
-    st.header("🔍 Recomendador Inteligente")
+    st.markdown("""
+    <div class="intro-seccion">
+        <h4>🔍 Recomendador Inteligente</h4>
+        <p>
+        Sistema de matching para encontrar
+        el acero más parecido a los requisitos.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
     datos_modelo = aceros.dropna(
         subset=COLUMNAS_MODELO
@@ -773,7 +804,7 @@ with tab_recomendador:
         )
 
         st.success(
-            "Acero encontrado."
+            "🎉 Matching exitoso."
         )
 
         c1, c2, c3 = st.columns(3)
@@ -792,12 +823,3 @@ with tab_recomendador:
             "% Carbono",
             f"{match['%C']:.2f}"
         )
-
-        st.markdown("""
-        ### 🧠 Conclusión del Matching
-
-        El sistema encontró el acero
-        más cercano a los requisitos
-        solicitados utilizando distancia
-        euclidiana normalizada.
-        """)
