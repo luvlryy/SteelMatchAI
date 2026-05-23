@@ -105,15 +105,20 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Syne:wght@700;800&display=swap');
 
-    /* Fondo principal: Futuristic Grid */
-    .stApp {
-        background-color: #020617;
+    /* Fondo principal y Barra Lateral: Futuristic Grid */
+    .stApp, [data-testid="stSidebar"] {
+        background-color: #020617 !important;
         background-image: 
             linear-gradient(rgba(14, 165, 233, 0.05) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
-        background-size: 50px 50px;
-        background-position: -1px -1px;
-        background-attachment: fixed;
+            linear-gradient(90deg, rgba(14, 165, 233, 0.05) 1px, transparent 1px) !important;
+        background-size: 50px 50px !important;
+        background-position: -1px -1px !important;
+        background-attachment: fixed !important;
+    }
+    
+    /* Borde de la barra lateral */
+    [data-testid="stSidebar"] {
+        border-right: 1px solid rgba(6, 182, 212, 0.3) !important;
     }
 
     /* TEXTO GENERAL BLANCO BRILLANTE PARA MÁXIMA LEGIBILIDAD */
@@ -197,7 +202,7 @@ st.markdown("""
         box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
     }
 
-    /* Cajas de introducción y guías (Mantenemos blanco puro adentro) */
+    /* Cajas de introducción y guías */
     .intro-seccion {
         background: rgba(15, 23, 42, 0.6);
         border: 2px solid #06b6d4;
