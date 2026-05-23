@@ -43,57 +43,7 @@ COLUMNAS_MODELO = [
     "Hardness (HB)",
     "Elongation (%)"
 ]
-# -*- coding: utf-8 -*-
-"""
-Proyecto Integrador Materiales — SteelMatch AI (Versión Completa)
-"""
 
-import re
-import numpy as np
-import pandas as pd
-import streamlit as st
-import plotly.express as px
-import plotly.graph_objects as go
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics.pairwise import euclidean_distances
-import statsmodels.api as sm
-from statsmodels.formula.api import ols
-import warnings
-
-warnings.filterwarnings("ignore", category=UserWarning)
-
-# --- CONFIGURACIÓN Y ESTILOS ---
-st.set_page_config(page_title="SteelMatch AI | Quantum Materials", page_icon="⚙️", layout="wide")
-
-# (Se mantienen los estilos CSS proporcionados anteriormente...)
-st.markdown("""<style> /* Estilos CSS previos... */ </style>""", unsafe_allow_html=True)
-
-# --- CARGA Y PROCESAMIENTO ---
-@st.cache_data
-def cargar_y_preprocesar_datos(nombre_archivo):
-    # Aquí iría tu lógica de carga de archivo
-    aceros = pd.read_excel(nombre_archivo)
-    # ... (Procesamiento y limpieza igual al original)
-    return aceros
-
-# --- PESTAÑAS DEL PROYECTO ---
-# Se han añadido nuevas pestañas conforme a la guía
-tab_inicio, tab_exploracion, tab_datos, tab_temp, tab_anova, tab_recomendador = st.tabs([
-    "🏠 Inicio", "📊 Propiedades vs C", "📖 Exploración de Datos", "🔥 Protocolo Térmico", "⚖️ ANOVA", "🔍 Requisitor"
-])
-
-# (Nota: Implementar lógica de cada tab basada en el código original y las nuevas secciones)
-
-# Ejemplo de la nueva pestaña de Exploración de Datos solicitada:
-with tab_datos:
-    st.subheader("Listado de Aceros (SAE Grade)")
-    df_sae = aceros.groupby("SAE Grade").size().reset_index(name="Registros")
-    st.table(df_sae)
-    
-    st.subheader("Tratamientos Térmicos")
-    df_trat = aceros.groupby("Condition_simple").size().reset_index(name="Registros")
-    # Aquí puedes añadir tu descripción breve según lo visto en clase
-    st.table(df_trat)
 # Diseño base para gráficas - Futuristic Console
 PLOTLY_LAYOUT = dict(
     template="plotly_dark",
