@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Proyecto Integrador Materiales — SteelMatch AI (Versión Amigable y Estética)
+Proyecto Integrador Materiales — SteelMatch AI (Versión Alto Contraste)
 """
 
 import re
@@ -44,22 +44,23 @@ COLUMNAS_MODELO = [
     "Elongation (%)"
 ]
 
-# Diseño base para hacer las gráficas más elegantes
+# Diseño base para gráficas - Letras blancas para máximo contraste
 PLOTLY_LAYOUT = dict(
     template="plotly_dark",
     paper_bgcolor="rgba(0,0,0,0)",   
     plot_bgcolor="rgba(15,23,42,0.3)",
-    font=dict(color="#cbd5e1", family="sans-serif", size=13),
-    title_font=dict(color="#60a5fa", size=18, family="sans-serif"),
+    font=dict(color="#ffffff", family="sans-serif", size=14),
+    title_font=dict(color="#93c5fd", size=18, family="sans-serif"),
     legend=dict(
-        bgcolor="rgba(15,23,42,0.7)", 
-        bordercolor="#475569", 
+        bgcolor="rgba(15,23,42,0.9)", 
+        bordercolor="#64748b", 
         borderwidth=1,
         orientation="h",
         yanchor="bottom",
         y=1.02,
         xanchor="right",
-        x=1
+        x=1,
+        font=dict(color="#ffffff")
     ),
     margin=dict(t=60, b=40, l=40, r=40)
 )
@@ -96,7 +97,7 @@ TRADUCCIONES_INVERSAS = {v: k for k, v in TRADUCCIONES_TRATAMIENTOS.items()}
 
 
 # ==========================================================
-# ESTILO VISUAL — INTERFAZ AMIGABLE
+# ESTILO VISUAL — ALTO CONTRASTE Y LEGIBILIDAD
 # ==========================================================
 
 st.markdown("""
@@ -109,15 +110,20 @@ st.markdown("""
         background-attachment: fixed;
     }
 
+    /* TEXTO GENERAL BLANCO PARA LEER SIN ESFUERZO */
     html, body, [class*="css"] {
         font-family: 'Inter', sans-serif;
-        color: #e2e8f0;
+        color: #ffffff !important; 
+    }
+    
+    p, span, label, li {
+        color: #ffffff !important;
     }
 
     /* Títulos agradables a la vista */
     h1 { 
         font-weight: 800 !important;
-        background: linear-gradient(90deg, #94a3b8, #f8fafc, #94a3b8);
+        background: linear-gradient(90deg, #e2e8f0, #ffffff, #e2e8f0);
         background-size: 200% auto;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -131,47 +137,56 @@ st.markdown("""
     }
 
     h2 {
-        color: #60a5fa !important;
+        color: #93c5fd !important; /* Azul más brillante */
         font-weight: 700 !important;
         border-left: 4px solid #60a5fa;
         padding-left: 15px;
         margin-top: 2rem !important;
     }
+    
+    h3, h4 {
+        color: #f8fafc !important; 
+    }
 
-    /* Selectores con buen contraste */
+    /* Selectores: El fondo es blanco, así que forzamos la letra a negro oscuro aquí */
     div[data-baseweb="select"] > div {
         background-color: #f8fafc !important; 
         border: 1px solid #94a3b8 !important;
         border-radius: 8px;
     }
     div[data-baseweb="select"] * {
-        color: #0f172a !important; 
-        font-weight: 600;
+        color: #020617 !important; /* Negro súper oscuro */
+        font-weight: 700;
     }
 
-    /* Cajas de introducción y guías (Más visuales y suaves) */
+    /* Cajas de introducción y guías (Textos en blanco puro) */
     .intro-seccion {
-        background: rgba(96, 165, 250, 0.1);
-        border: 1px solid rgba(96, 165, 250, 0.3);
+        background: rgba(96, 165, 250, 0.15);
+        border: 1px solid rgba(96, 165, 250, 0.4);
         padding: 20px;
         border-radius: 12px;
         margin-bottom: 25px;
     }
     .intro-seccion h4 {
         margin-top: 0 !important;
-        color: #93c5fd !important;
+        color: #bfdbfe !important; /* Azul hielo muy claro */
         margin-bottom: 10px !important;
+    }
+    .intro-seccion p {
+        color: #ffffff !important;
+        font-size: 15px !important;
     }
 
     .leyenda-grafica {
-        background: rgba(30, 41, 59, 0.6);
+        background: rgba(15, 23, 42, 0.8);
         border-left: 4px solid #34d399;
         padding: 15px 20px;
         border-radius: 0 8px 8px 0;
         margin-top: 10px;
         margin-bottom: 25px;
-        font-size: 14px;
+        font-size: 15px;
         line-height: 1.6;
+        color: #ffffff !important;
     }
 
     /* Tarjetas de Conclusión */
@@ -183,19 +198,19 @@ st.markdown("""
     }
     
     .card-conclusion-item {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 10px;
         padding: 20px;
         transition: transform 0.2s;
     }
     .card-conclusion-item:hover {
         transform: translateY(-5px);
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.1);
     }
     
     .card-conclusion-item strong {
-        color: #60a5fa;
+        color: #93c5fd !important;
         font-size: 16px;
         display: flex;
         align-items: center;
@@ -204,17 +219,28 @@ st.markdown("""
     
     .card-conclusion-item p {
         margin: 10px 0 0 0 !important;
-        font-size: 14px !important;
-        color: #cbd5e1 !important;
+        font-size: 15px !important;
+        color: #ffffff !important; /* Blanco puro */
     }
 
     .interpretacion-box {
-        background: linear-gradient(to right, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
-        border: 1px solid rgba(16, 185, 129, 0.3);
+        background: linear-gradient(to right, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+        border: 1px solid rgba(16, 185, 129, 0.4);
         border-radius: 10px;
         padding: 20px;
         margin-top: 20px;
     }
+    .interpretacion-box p, .interpretacion-box h3 {
+        color: #ffffff !important;
+    }
+
+    /* Ajustes específicos de las pestañas */
+    .stTabs [data-baseweb="tab"] { color: #cbd5e1 !important; font-weight: 600; }
+    .stTabs [aria-selected="true"] { color: #ffffff !important; font-weight: 800; border-bottom-color: #60a5fa !important; }
+    
+    /* Métricas numéricas súper visibles */
+    [data-testid="stMetricValue"] { color: #ffffff !important; font-weight: 800 !important; }
+    [data-testid="stMetricLabel"] { color: #bfdbfe !important; font-size: 14px !important; }
 
 </style>
 """, unsafe_allow_html=True)
@@ -248,11 +274,10 @@ def extraer_temperatura(condicion):
 
 def aplicar_layout_estetico(fig):
     fig.update_layout(**PLOTLY_LAYOUT)
-    fig.update_xaxes(gridcolor="rgba(71,85,105,0.2)", zerolinecolor="rgba(148,163,184,0.1)", showgrid=True)
-    fig.update_yaxes(gridcolor="rgba(71,85,105,0.2)", zerolinecolor="rgba(148,163,184,0.1)", showgrid=True)
-    # Hacer los puntos de las gráficas más bonitos y consistentes
+    fig.update_xaxes(gridcolor="rgba(255,255,255,0.1)", zerolinecolor="rgba(255,255,255,0.2)", showgrid=True)
+    fig.update_yaxes(gridcolor="rgba(255,255,255,0.1)", zerolinecolor="rgba(255,255,255,0.2)", showgrid=True)
     fig.update_traces(
-        marker=dict(size=9, opacity=0.7, line=dict(width=1, color='rgba(255,255,255,0.5)')),
+        marker=dict(size=10, opacity=0.85, line=dict(width=1.5, color='rgba(255,255,255,0.8)')),
         selector=dict(mode='markers')
     )
     return fig
@@ -349,7 +374,7 @@ buscar = st.sidebar.button("🚀 Buscar el Acero Ideal")
 st.sidebar.markdown("---")
 with st.sidebar.expander("📖 Minidiccionario para entender todo", expanded=True):
     st.markdown("""
-    <div style="font-size: 13px; color: #cbd5e1; line-height: 1.5;">
+    <div style="font-size: 14px; color: #ffffff; line-height: 1.6;">
         <p><strong>💪 UTS (Fuerza Máxima):</strong> Cuánta fuerza bruta soporta antes de partirse en dos.</p>
         <p><strong>📐 YS (Punto de Doblez):</strong> Cuánto peso aguanta antes de quedarse deformado (chueco) para siempre.</p>
         <p><strong>💎 Dureza (HB):</strong> Qué tan difícil es rayarlo o hacerle una abolladura.</p>
@@ -427,7 +452,6 @@ with tab_exploracion:
     </div>
     """, unsafe_allow_html=True)
 
-    # Gráfica más colorida y limpia usando la paleta px.colors.qualitative.Pastel
     fig_c = px.scatter(
         df_carb, x="%C", y=prop_c, 
         color="Tratamiento (Horneado)", 
@@ -480,98 +504,4 @@ with tab_anova:
     st.markdown("""
     <div class="intro-seccion">
         <h4>⚖️ ¿Quién es el verdadero culpable?</h4>
-        <p>En esta sección vas a encontrar la respuesta a un gran misterio: Si una característica del metal cambia mucho... ¿Fue por culpa de los ingredientes (Carbono) o por culpa de cómo lo horneamos (Tratamiento)? Aquí el sistema hace los cálculos por ti y te muestra quién tiene el control.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    prop_anova = st.selectbox("Selecciona la característica que quieres investigar:", PROPIEDADES_MECANICAS, key="sb_p_a")
-    
-    df_anova = aceros.dropna(subset=["%C", "Condition_simple", prop_anova]).copy()
-    if len(df_anova) > 10:
-        df_anova = df_anova.rename(columns={"%C": "Carbono", prop_anova: "Propiedad", "Condition_simple": "Tratamiento"})
-        mod = ols("Propiedad ~ Carbono + C(Tratamiento)", data=df_anova).fit()
-        tab_a = sm.stats.anova_lm(mod, typ=2)
-        tab_a["Influencia_%"] = (tab_a["sum_sq"] / tab_a["sum_sq"].sum()) * 100
-        
-        # Obtenemos los porcentajes
-        pct_carbono = tab_a.loc["Carbono", "Influencia_%"]
-        pct_tratamiento = tab_a.loc["C(Tratamiento)", "Influencia_%"]
-        pct_otros = tab_a.loc["Residual", "Influencia_%"]
-        
-        st.subheader(f"¿Quién controla la característica: {prop_anova}?")
-        
-        # Donut Chart muy amigable
-        fig_pie = go.Figure(data=[go.Pie(
-            labels=["Los Ingredientes<br>(Carbono)", "El Horneado<br>(Tratamiento)", "Otras cosas<br>(Misterios del metal)"],
-            values=[pct_carbono, pct_tratamiento, pct_otros],
-            hole=.6,
-            marker_colors=["#3b82f6", "#8b5cf6", "#475569"],
-            textinfo='label+percent',
-            textfont_size=15,
-            hoverinfo='label+percent'
-        )])
-        
-        fig_pie.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="#f8fafc", family="Inter"),
-            showlegend=False,
-            margin=dict(t=20, b=20, l=20, r=20)
-        )
-        
-        st.plotly_chart(fig_pie, use_container_width=True, theme=None)
-
-        # INTERPRETACIÓN AUTOMÁTICA AMIGABLE
-        st.markdown("<div class='interpretacion-box'>", unsafe_allow_html=True)
-        st.markdown("### 🧠 ¿Qué significa esto para mí?")
-        if pct_carbono > pct_tratamiento:
-            st.markdown(f"¡Resulta que **los ingredientes son los que mandan**! Para modificar el/la **{prop_anova}** de tu metal, el porcentaje de Carbono es el factor más poderoso (representa el **{pct_carbono:.1f}%** del impacto). No te desgastes tanto cambiando el horno, ¡concéntrate en la receta química!")
-        else:
-            st.markdown(f"¡Resulta que **la magia está en el horno**! Para modificar el/la **{prop_anova}**, no importa tanto si le pones más o menos carbono. Lo que realmente cambia las reglas del juego (con un **{pct_tratamiento:.1f}%** de impacto) es si lo dejas enfriar lento, rápido o si lo aplastas en frío. ¡Juega con las temperaturas!")
-        st.markdown("</div>", unsafe_allow_html=True)
-
-
-# ── TAB 5 — RECOMENDADOR INTELIGENTE ──
-with tab_recomendador:
-    st.markdown("""
-    <div class="intro-seccion">
-        <h4>🔍 El Buscador Mágico de Aceros</h4>
-        <p>Aquí vas a encontrar tu asistente personal. Basado en los requisitos que pusiste en el menú de la izquierda, la Inteligencia Artificial buscará entre todos los aceros reales del mundo y te dirá cuál es el nombre comercial exacto que debes ir a comprar a la ferretería industrial.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if not datos_modelo_limpio.empty:
-        scaler = MinMaxScaler()
-        scaler.fit(datos_modelo_limpio[COLUMNAS_MODELO])
-
-        if buscar:
-            df_res = datos_modelo_limpio.copy()
-            if tratamiento_elegido_espanol != "Todos":
-                tag_or = TRADUCCIONES_INVERSAS.get(tratamiento_elegido_espanol, "Other")
-                df_res = df_res[df_res["Condition_simple"] == tag_or]
-
-            if df_res.empty:
-                st.warning("Ups. No encontré ningún acero que coincida con ese horneado en específico. Intenta seleccionando 'Todos'.")
-            else:
-                usr_in = np.array([[carbono, uts, ys, dureza, elongacion]])
-                usr_norm = scaler.transform(usr_in)
-                mat_norm = scaler.transform(df_res[COLUMNAS_MODELO])
-
-                dist = euclidean_distances(usr_norm, mat_norm)
-                idx = np.argmin(dist)
-                match_mat = df_res.iloc[idx]
-                pct_sim = 100 / (1 + dist[0][idx])
-
-                st.success("🎉 ¡Bingo! Encontré el acero comercial perfecto para ti.")
-                
-                st.subheader("🏆 Tu Acero Recomendado es:")
-                c1, c2, c3 = st.columns(3)
-                with c1:
-                    st.metric("Pídelo en tienda como:", f"SAE {match_mat['SAE Grade']}")
-                    st.metric("Debe venir horneado en:", TRADUCCIONES_TRATAMIENTOS.get(match_mat['Condition_simple'], match_mat['Condition_simple']))
-                with c2:
-                    st.metric("Qué tanto se parece a lo que pediste:", f"{pct_sim:.1f}%")
-                    st.metric("Ingrediente (Carbono):", f"{match_mat['%C']:.3f} %")
-                with c3:
-                    st.metric("Fuerza Máxima (UTS):", f"{match_mat['UTS (MPa)']} MPa")
-                    st.metric("Dureza real (HB):", f"{match_mat['Hardness (HB)']} HB")
+        <p>En esta sección vas a encontrar la respuesta a un gran misterio: Si una característica del metal cambia mucho... ¿Fue por culpa de los ingredientes (Carbono) o por culpa de cómo lo horneamos (Tratamiento
