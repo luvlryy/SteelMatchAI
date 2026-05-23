@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Proyecto Integrador Materiales — SteelMatch AI
-Versión Corregida — Formato Original, Conclusión Enriquecida y Glosario Lateral Humano
 """
 
 import re
